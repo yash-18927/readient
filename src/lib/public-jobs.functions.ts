@@ -9,27 +9,6 @@ import {
 } from "@/lib/jobs/schema";
 
 
-/** Publishable-key server client: RLS applies as anon. */
-async function publicClient() {
-  const { createClient } = await import("@supabase/supabase-js");
-  const { default: type } = { default: null } as { default: null };
-  void type;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-  return createClient(process.env.SUPABASE_URL!, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: {
-      fetch: (input: RequestInfo | URL, init?: RequestInit) => {
-        const headers = new Headers(init?.headers);
-        if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) {
-          headers.delete("Authorization");
-        }
-        headers.set("apikey", key);
-        return fetch(input, { ...init, headers });
-      },
-    },
-  });
-}
-
 export type PublicJob = {
   title: string;
   company: string;
@@ -43,7 +22,8 @@ export type PublicJob = {
 export const getPublicJob = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => z.object({ slug: z.string().min(8).max(64) }).parse(data))
   .handler(async ({ data }): Promise<{ job: PublicJob | null }> => {
-    const supabase = await publicClient();
+    const { createPublicClient } = await import("@/lib/jobs/public-client.server");
+    const supabase = createPublicClient();
     const { data: rows } = await supabase.rpc("public_job_by_slug", { _slug: data.slug });
     const job = rows?.[0];
     if (!job) return { job: null };
@@ -93,7 +73,8 @@ const submissionInput = z.object({
 export const submitApplication = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => submissionInput.parse(data))
   .handler(async ({ data }): Promise<{ score: number; result: AnalysisResult; jobTitle: string }> => {
-    const supabase = await publicClient();
+    const { createPublicClient } = await import("@/lib/jobs/public-client.server");
+    const supabase = createPublicClient();
     const { scoreCandidate } = await import("@/lib/jobs/ai.server");
     const { AnalysisError } = await import("@/lib/analysis/ai.server");
 
