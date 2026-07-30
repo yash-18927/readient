@@ -13,7 +13,13 @@ import { dashboardPath, setPendingRole, waitForProfile, type AppRole } from "@/l
 const searchSchema = z.object({
   role: z.enum(["student", "recruiter"]).optional(),
   mode: z.enum(["signin", "signup"]).optional(),
+  next: z.string().optional(),
 });
+
+/** Only same-origin relative paths may be used as a post-sign-in redirect. */
+function safeNext(next: string | undefined) {
+  return next && next.startsWith("/") && !next.startsWith("//") ? next : undefined;
+}
 
 export const Route = createFileRoute("/auth/")({
   validateSearch: searchSchema,

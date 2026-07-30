@@ -64,7 +64,15 @@ function AuthCallback() {
         if (data) profile = data;
       }
 
-      if (!cancelled) navigate({ to: dashboardPath(profile?.role ?? pendingRole ?? "student") });
+      if (cancelled) return;
+
+      const next = url.searchParams.get("next");
+      if (next && next.startsWith("/") && !next.startsWith("//")) {
+        window.location.replace(next);
+        return;
+      }
+
+      navigate({ to: dashboardPath(profile?.role ?? pendingRole ?? "student") });
     }
 
     complete();
