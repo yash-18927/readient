@@ -22,12 +22,12 @@ export const Route = createFileRoute("/apply/$slug")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Apply for this role — PlacementIQ" },
+      { title: "Apply for this role — Readient" },
       {
         name: "description",
         content: "Upload your resume and get an instant AI fit score for this job — no account needed.",
       },
-      { property: "og:title", content: "Apply for this role — PlacementIQ" },
+      { property: "og:title", content: "Apply for this role — Readient" },
       {
         property: "og:description",
         content: "Upload your resume and get an instant AI fit score for this job — no account needed.",
@@ -130,7 +130,7 @@ function ApplyPage() {
     <main className="mx-auto w-full max-w-4xl px-6 py-12">
       <header className="mb-8">
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
-          PlacementIQ
+          Readient
         </Link>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">{posting.title}</h1>
         <p className="mt-1 text-muted-foreground">
@@ -278,7 +278,7 @@ function CenteredNotice({ title, body }: { title: string; body: string }) {
       <h1 className="text-2xl font-semibold">{title}</h1>
       <p className="mt-3 text-sm text-muted-foreground">{body}</p>
       <Button asChild className="mt-6" variant="outline">
-        <Link to="/">Back to PlacementIQ</Link>
+        <Link to="/">Back to Readient</Link>
       </Button>
     </main>
   );

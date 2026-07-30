@@ -8,11 +8,11 @@ export const Route = createFileRoute("/auth/callback")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Signing you in — PlacementIQ" },
-      { name: "description", content: "Completing your PlacementIQ sign-in." },
+      { title: "Signing you in — Readient" },
+      { name: "description", content: "Completing your Readient sign-in." },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Signing you in — PlacementIQ" },
-      { property: "og:description", content: "Completing your PlacementIQ sign-in." },
+      { property: "og:title", content: "Signing you in — Readient" },
+      { property: "og:description", content: "Completing your Readient sign-in." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
