@@ -43,7 +43,7 @@ export function DashboardLayout({
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex items-center gap-8">
             <Link to="/" className="font-display text-base font-bold">
-              Placement<span className="text-primary">IQ</span>
+              Readient
             </Link>
             <nav className="hidden items-center gap-6 sm:flex">
               {navItems.map((item) => (
