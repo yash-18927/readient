@@ -9,6 +9,8 @@ export const jobRequirementsSchema = z.object({
   required_skills: list,
   nice_to_have_skills: list,
   experience_level: z.string().default("Entry level"),
+  field: z.string().default(""),
+  additional_info: z.string().default(""),
 });
 
 /** Role-specific scoring rubric (stored in jobs.rubric). */

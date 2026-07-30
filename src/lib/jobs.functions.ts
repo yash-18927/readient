@@ -31,15 +31,45 @@ export type SubmissionRecord = {
   analysis_result: AnalysisResult;
 };
 
+/** Extracts text from an uploaded requirement sheet / email export. */
+export const extractJobDocument = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ fileName: z.string().min(1), base64: z.string().min(1) }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { extractDocumentText, ExtractionError } = await import("@/lib/analysis/extract.server");
+    try {
+      return { text: await extractDocumentText(data.fileName, data.base64) };
+    } catch (error) {
+      if (error instanceof ExtractionError) throw new Error(error.message);
+      console.error("[extract-job-doc]", error);
+      throw new Error("We could not read this file. Try a PDF, DOCX, or plain text file.");
+    }
+  });
+
 /** Turns raw recruiter notes into a structured, editable job draft. */
 export const draftJob = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) => z.object({ rawInput: z.string().min(30).max(20000) }).parse(data))
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        rawInput: z.string().min(30).max(20000),
+        field: z.string().max(100).optional(),
+        targetRole: z.string().max(200).optional(),
+        notes: z.string().max(4000).optional(),
+      })
+      .parse(data),
+  )
   .handler(async ({ data }) => {
     const { structureJobPosting } = await import("@/lib/jobs/ai.server");
     const { AnalysisError } = await import("@/lib/analysis/ai.server");
     try {
-      const { result } = await structureJobPosting(data.rawInput);
+      const { result } = await structureJobPosting(data.rawInput, {
+        field: data.field,
+        targetRole: data.targetRole,
+        notes: data.notes,
+      });
       return result;
     } catch (error) {
       if (error instanceof AnalysisError) throw new Error(error.message);

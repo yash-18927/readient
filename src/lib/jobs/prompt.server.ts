@@ -13,7 +13,9 @@ const JOB_JSON_CONTRACT = `Return JSON with EXACTLY this shape (all keys require
     "responsibilities": string[],
     "required_skills": string[],
     "nice_to_have_skills": string[],
-    "experience_level": string
+    "experience_level": string,
+    "field": string,
+    "additional_info": string
   },
   "rubric": {
     "pillar_weights": {
@@ -34,13 +36,25 @@ Rules:
 - "ats_keywords" are 10-20 concrete terms an ATS would scan for in a resume for this role.
 - "evaluation_notes" is 2-3 sentences telling a resume evaluator what separates a strong from a weak candidate for THIS role.
 - 4-8 responsibilities, 5-12 required skills, 3-8 nice-to-have skills.
+- "field" is the broad domain/background the role suits (e.g. Engineering, Commerce, Design).
+- "additional_info" is any extra detail worth showing candidates (location, stipend, work mode, joining date) drawn from the input; empty string if none.
 - If company name is not stated, return an empty string — never invent one.`;
 
-export function buildJobStructurePrompt(rawInput: string): { system: string; user: string } {
+export function buildJobStructurePrompt(
+  rawInput: string,
+  hints: { field?: string; targetRole?: string; notes?: string } = {},
+): { system: string; user: string } {
+  const guidance = [
+    hints.field ? `INDUSTRY / ACADEMIC BACKGROUND THIS ROLE IS FOR: ${hints.field}` : "",
+    hints.targetRole ? `ROLE / POSITION THE RECRUITER IS HIRING FOR: ${hints.targetRole} (use this as the title unless the notes clearly state a better one)` : "",
+    hints.notes ? `RECRUITER NOTES AND ADDITIONAL INSTRUCTIONS (these override the raw input on conflict):\n${hints.notes.slice(0, 3000)}` : "",
+  ].filter(Boolean);
+
   return {
     system: JOB_STRUCTURE_SYSTEM,
     user: [
-      `RAW RECRUITER INPUT:\n"""\n${rawInput.trim().slice(0, 12000)}\n"""`,
+      `RAW RECRUITER INPUT (emails, requirement sheets, hiring notes):\n"""\n${rawInput.trim().slice(0, 12000)}\n"""`,
+      ...guidance,
       JOB_JSON_CONTRACT,
     ].join("\n\n"),
   };

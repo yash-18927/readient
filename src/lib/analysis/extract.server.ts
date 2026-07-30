@@ -66,6 +66,29 @@ export async function extractResumeText(fileName: string, base64: string): Promi
   return text;
 }
 
+/** Generic document text extraction for recruiter uploads (PDF, DOCX, or plain text). */
+export async function extractDocumentText(fileName: string, base64: string): Promise<string> {
+  const bytes = bytesFromBase64(base64);
+  if (bytes.byteLength > MAX_FILE_BYTES) throw new ExtractionError("File is larger than 5MB.");
+
+  const lower = fileName.toLowerCase();
+  let text: string;
+  if (lower.endsWith(".pdf")) {
+    text = await extractPdf(bytes);
+  } else if (lower.endsWith(".docx")) {
+    text = extractDocx(bytes);
+  } else if (/\.(txt|md|eml|csv|rtf|html?)$/.test(lower)) {
+    text = cleanText(new TextDecoder().decode(bytes).replace(/<[^>]+>/g, " "));
+  } else {
+    throw new ExtractionError("Supported files: PDF, DOCX, TXT, MD, EML, CSV, HTML.");
+  }
+
+  if (text.replace(/\s/g, "").length < 50) {
+    throw new ExtractionError("We could not read enough text from this file. Try a text-based document.");
+  }
+  return text;
+}
+
 export async function hashKey(value: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return Array.from(new Uint8Array(digest))
