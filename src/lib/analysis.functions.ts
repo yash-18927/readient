@@ -27,7 +27,7 @@ const analyzeInput = z.object({
   field: z.string().min(1),
   targetRole: z.string().min(1),
   jobDescription: z.string().optional(),
-  evidence: z.record(z.string()).default({}),
+  evidence: z.record(z.string(), z.string()).default({}),
   resumeText: z.string().min(100),
   resumeFileName: z.string().optional(),
 });
