@@ -1,0 +1,124 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import type { AnalysisResult } from "@/lib/analysis/schema";
+import {
+  jobRequirementsSchema,
+  jobRubricSchema,
+  isJobAcceptingSubmissions,
+  type JobRequirements,
+} from "@/lib/jobs/schema";
+
+export type PublicJob = {
+  title: string;
+  company: string;
+  requirements: JobRequirements;
+  status: string;
+  deadline: string | null;
+  accepting: boolean;
+};
+
+/** Public, read-only view of a job posting resolved by its unguessable slug. */
+export const getPublicJob = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({ slug: z.string().min(8).max(64) }).parse(data))
+  .handler(async ({ data }): Promise<PublicJob | null> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: job } = await supabaseAdmin
+      .from("jobs")
+      .select("title, company, structured_requirements, status, deadline")
+      .eq("share_slug", data.slug)
+      .maybeSingle();
+    if (!job) return null;
+
+    return {
+      title: job.title,
+      company: job.company,
+      requirements: jobRequirementsSchema.parse(job.structured_requirements ?? {}),
+      status: job.status,
+      deadline: job.deadline,
+      accepting: isJobAcceptingSubmissions({ status: job.status, deadline: job.deadline }),
+    };
+  });
+
+/** Public resume text extraction for candidates (no account required). */
+export const extractPublicResume = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) =>
+    z.object({ fileName: z.string().min(1), base64: z.string().min(1).max(9_000_000) }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { extractResumeText, ExtractionError } = await import("@/lib/analysis/extract.server");
+    try {
+      return { text: await extractResumeText(data.fileName, data.base64) };
+    } catch (error) {
+      if (error instanceof ExtractionError) throw new Error(error.message);
+      console.error("[public-extract]", error);
+      throw new Error("We could not read this file. Please try a different PDF or DOCX.");
+    }
+  });
+
+const submissionInput = z.object({
+  slug: z.string().min(8).max(64),
+  candidateName: z.string().trim().max(120).optional(),
+  candidateEmail: z.string().trim().email().max(255).optional().or(z.literal("")),
+  links: z.record(z.string(), z.string().trim().max(500)).default({}),
+  resumeText: z.string().min(100).max(60000),
+  resumeFileName: z.string().max(255).optional(),
+});
+
+/**
+ * Scores a candidate against one open job and stores the submission.
+ * Fully unauthenticated: the only write path is this function, which requires a
+ * valid slug and an open, in-deadline job.
+ */
+export const submitApplication = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => submissionInput.parse(data))
+  .handler(async ({ data }): Promise<{ score: number; result: AnalysisResult; jobTitle: string }> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { scoreCandidate } = await import("@/lib/jobs/ai.server");
+    const { AnalysisError } = await import("@/lib/analysis/ai.server");
+
+    const { data: job } = await supabaseAdmin
+      .from("jobs")
+      .select("id, title, company, structured_requirements, rubric, status, deadline")
+      .eq("share_slug", data.slug)
+      .maybeSingle();
+
+    if (!job) throw new Error("This job posting could not be found.");
+    if (!isJobAcceptingSubmissions({ status: job.status, deadline: job.deadline })) {
+      throw new Error("This job is no longer accepting submissions.");
+    }
+
+    const requirements = jobRequirementsSchema.parse(job.structured_requirements ?? {});
+    const rubric = jobRubricSchema.parse(job.rubric ?? { pillar_weights: {} });
+
+    let result: AnalysisResult;
+    try {
+      const scored = await scoreCandidate({
+        title: job.title,
+        company: job.company,
+        requirements,
+        rubric,
+        resumeText: data.resumeText,
+        links: data.links,
+      });
+      result = scored.result;
+    } catch (error) {
+      if (error instanceof AnalysisError) throw new Error(error.message);
+      throw error;
+    }
+
+    const score = Math.round(result.overall_score);
+
+    const { error } = await supabaseAdmin.from("submissions").insert({
+      job_id: job.id,
+      candidate_name: data.candidateName?.trim() || null,
+      candidate_email: data.candidateEmail?.trim() || null,
+      links: data.links,
+      resume_text: data.resumeText,
+      resume_file_name: data.resumeFileName ?? null,
+      analysis_result: result,
+      score,
+    });
+    if (error) throw new Error(error.message);
+
+    return { score, result, jobTitle: job.title };
+  });
