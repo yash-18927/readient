@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { ArrowLeft, GraduationCap, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { setPendingRole, type AppRole } from "@/lib/auth";
+import { dashboardPath, setPendingRole, type AppRole } from "@/lib/auth";
 
 export const Route = createFileRoute("/get-started")({
   head: () => ({

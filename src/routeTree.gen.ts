@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GetStartedRouteImport } from './routes/get-started'
+import { Route as RecruiterRouteImport } from './routes/recruiter'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const GetStartedRoute = GetStartedRouteImport.update({
   id: '/get-started',
   path: '/get-started',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecruiterRoute = RecruiterRouteImport.update({
+  id: '/recruiter',
+  path: '/recruiter',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudentRoute = StudentRouteImport.update({
@@ -44,6 +50,7 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
+  '/recruiter': typeof RecruiterRoute
   '/student': typeof StudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/': typeof AuthIndexRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
+  '/recruiter': typeof RecruiterRoute
   '/student': typeof StudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth': typeof AuthIndexRoute
@@ -59,22 +67,42 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
+  '/recruiter': typeof RecruiterRoute
   '/student': typeof StudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/': typeof AuthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/get-started' | '/student' | '/auth/callback' | '/auth/'
+  fullPaths:
+    | '/'
+    | '/get-started'
+    | '/recruiter'
+    | '/student'
+    | '/auth/callback'
+    | '/auth/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/get-started' | '/student' | '/auth/callback' | '/auth'
+  to:
+    | '/'
+    | '/get-started'
+    | '/recruiter'
+    | '/student'
+    | '/auth/callback'
+    | '/auth'
   id:
-    '__root__' | '/' | '/get-started' | '/student' | '/auth/callback' | '/auth/'
+    | '__root__'
+    | '/'
+    | '/get-started'
+    | '/recruiter'
+    | '/student'
+    | '/auth/callback'
+    | '/auth/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GetStartedRoute: typeof GetStartedRoute
+  RecruiterRoute: typeof RecruiterRoute
   StudentRoute: typeof StudentRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthIndexRoute: typeof AuthIndexRoute
@@ -94,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/get-started'
       fullPath: '/get-started'
       preLoaderRoute: typeof GetStartedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recruiter': {
+      id: '/recruiter'
+      path: '/recruiter'
+      fullPath: '/recruiter'
+      preLoaderRoute: typeof RecruiterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/student': {
@@ -123,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GetStartedRoute: GetStartedRoute,
+  RecruiterRoute: RecruiterRoute,
   StudentRoute: StudentRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthIndexRoute: AuthIndexRoute,
