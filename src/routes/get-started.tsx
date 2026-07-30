@@ -6,10 +6,10 @@ import { dashboardPath, setPendingRole, type AppRole } from "@/lib/auth";
 export const Route = createFileRoute("/get-started")({
   head: () => ({
     meta: [
-      { title: "Choose your role — PlacementIQ" },
-      { name: "description", content: "Join PlacementIQ as a student or as a recruiter." },
-      { property: "og:title", content: "Choose your role — PlacementIQ" },
-      { property: "og:description", content: "Join PlacementIQ as a student or as a recruiter." },
+      { title: "Choose your role — Readient" },
+      { name: "description", content: "Join Readient as a student or as a recruiter." },
+      { property: "og:title", content: "Choose your role — Readient" },
+      { property: "og:description", content: "Join Readient as a student or as a recruiter." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -46,7 +46,7 @@ function GetStarted() {
       </div>
 
       <div className="mx-auto w-full max-w-4xl flex-1 px-6 pb-24">
-        <h1 className="text-3xl font-bold sm:text-4xl">How will you use PlacementIQ?</h1>
+        <h1 className="text-3xl font-bold sm:text-4xl">How will you use Readient?</h1>
         <p className="mt-3 text-muted-foreground">
           Pick one to open your workspace — you&apos;ll only need an account when you run an analysis.
         </p>
