@@ -77,7 +77,7 @@ function Consent() {
       <div className="rounded-2xl border border-border bg-card p-8 shadow-soft">
         <h1 className="text-2xl font-bold">Connect {clientName}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          This lets {clientName} read your PlacementIQ profile and resume analyses as you.
+          This lets {clientName} read your Readient profile and resume analyses as you.
         </p>
         {error && (
           <p role="alert" className="mt-4 text-sm text-destructive">
