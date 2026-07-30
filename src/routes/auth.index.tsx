@@ -37,7 +37,7 @@ export const Route = createFileRoute("/auth/")({
 });
 
 function AuthPage() {
-  const { role, mode } = Route.useSearch();
+  const { role, mode, next } = Route.useSearch();
   const navigate = useNavigate();
   const selectedRole: AppRole = role ?? "student";
   const [tab, setTab] = useState<"signin" | "signup">(mode ?? "signin");
@@ -45,6 +45,19 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const redirectTarget = safeNext(next);
+  const callbackUrl = `${typeof window === "undefined" ? "" : window.location.origin}/auth/callback${
+    redirectTarget ? `?next=${encodeURIComponent(redirectTarget)}` : ""
+  }`;
+
+  function goAfterAuth(resolvedRole: AppRole) {
+    if (redirectTarget) {
+      window.location.replace(redirectTarget);
+      return;
+    }
+    navigate({ to: dashboardPath(resolvedRole) });
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -55,7 +68,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: callbackUrl,
             data: { role: selectedRole, full_name: fullName },
           },
         });
@@ -65,12 +78,12 @@ function AuthPage() {
           return;
         }
         const profile = await waitForProfile(data.user!.id);
-        navigate({ to: dashboardPath(profile?.role ?? selectedRole) });
+        goAfterAuth(profile?.role ?? selectedRole);
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         const profile = await waitForProfile(data.user.id);
-        navigate({ to: dashboardPath(profile?.role ?? "student") });
+        goAfterAuth(profile?.role ?? "student");
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong");
@@ -84,7 +97,7 @@ function AuthPage() {
     setPendingRole(selectedRole);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: callbackUrl },
     });
     if (error) {
       setBusy(false);
