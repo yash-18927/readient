@@ -20,26 +20,9 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/student", changefreq: "weekly", priority: "0.8" },
           { path: "/recruiter", changefreq: "weekly", priority: "0.8" },
         ];
+        // /apply/$slug links are unguessable, recruiter-shared URLs and are
+        // intentionally left out of the sitemap.
 
-        try {
-          const { createPublicClient } = await import("@/lib/jobs/public-client.server");
-          const supabase = createPublicClient();
-          const { data: jobs } = await supabase.rpc("public_jobs_list");
-          if (jobs) {
-            for (const job of jobs) {
-              entries.push({
-                path: `/apply/${job.share_slug}`,
-                lastmod: job.updated_at
-                  ? new Date(job.updated_at).toISOString().split("T")[0]
-                  : undefined,
-                changefreq: "weekly",
-                priority: "0.6",
-              });
-            }
-          }
-        } catch (error) {
-          console.error("[sitemap] failed to list public jobs", error);
-        }
 
         const urls = entries.map((e) =>
           [
