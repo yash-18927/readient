@@ -4,18 +4,22 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import type { Profile } from "@/lib/auth";
+import type { AppRole, Profile } from "@/lib/auth";
 
 export type NavItem = { label: string; active?: boolean };
 
 export function DashboardLayout({
   profile,
+  signedIn = true,
+  role,
   navItems,
   title,
   subtitle,
   children,
 }: {
   profile: Profile | null;
+  signedIn?: boolean;
+  role?: AppRole;
   navItems: NavItem[];
   title: string;
   subtitle: string;
@@ -30,12 +34,12 @@ export function DashboardLayout({
     queryClient.clear();
     await supabase.auth.signOut();
     router.invalidate();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/", replace: true });
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
+      <header className="border-b border-border bg-card no-print">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex items-center gap-8">
             <Link to="/" className="font-display text-base font-bold">
@@ -57,12 +61,29 @@ export function DashboardLayout({
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-muted-foreground sm:inline">
-              {profile?.full_name || "Account"} · {profile?.role}
-            </span>
-            <Button variant="outline" size="sm" onClick={signOut}>
-              <LogOut className="mr-2 size-4" /> Sign out
-            </Button>
+            {signedIn ? (
+              <>
+                <span className="hidden text-sm text-muted-foreground sm:inline">
+                  {profile?.full_name || "Account"} · {profile?.role}
+                </span>
+                <Button variant="outline" size="sm" onClick={signOut}>
+                  <LogOut className="mr-2 size-4" /> Sign out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="ghost" size="sm">
+                  <Link to="/auth" search={{ role, mode: "signin" }}>
+                    Sign in
+                  </Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link to="/auth" search={{ role, mode: "signup" }}>
+                    Create account
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>
