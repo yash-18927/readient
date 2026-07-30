@@ -99,7 +99,14 @@ export const updateJob = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }): Promise<JobRecord> => {
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      title?: string;
+      company?: string;
+      structured_requirements?: JobRequirements;
+      rubric?: JobRubric;
+      deadline?: string | null;
+      status?: JobStatus;
+    } = {};
     if (data.title !== undefined) patch.title = data.title;
     if (data.company !== undefined) patch.company = data.company;
     if (data.requirements !== undefined) patch.structured_requirements = data.requirements;
