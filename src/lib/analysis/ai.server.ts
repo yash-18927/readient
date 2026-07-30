@@ -31,14 +31,32 @@ async function callModel(model: string, system: string, user: string, apiKey: st
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const response = await fetch(GATEWAY_URL, {
+type Provider = "gemini" | "openrouter";
+
+async function callProvider(
+  provider: Provider,
+  model: string,
+  system: string,
+  user: string,
+  apiKey: string,
+): Promise<string> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const response = await fetch(provider === "gemini" ? GATEWAY_URL : OPENROUTER_URL, {
       method: "POST",
       signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-        "Lovable-API-Key": apiKey,
-        "X-Lovable-AIG-SDK": "fetch",
-      },
+      headers:
+        provider === "gemini"
+          ? {
+              "Content-Type": "application/json",
+              "Lovable-API-Key": apiKey,
+              "X-Lovable-AIG-SDK": "fetch",
+            }
+          : {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
       body: JSON.stringify({
         model,
         messages: [
@@ -51,14 +69,12 @@ async function callModel(model: string, system: string, user: string, apiKey: st
 
     if (!response.ok) {
       const body = await response.text();
-      if (response.status === 429) throw new AnalysisError("The analysis service is busy right now. Please retry in a moment.");
-      if (response.status === 402) throw new AnalysisError("AI credits are exhausted. Add credits to continue analysing resumes.");
-      throw new Error(`Gateway ${model} failed [${response.status}]: ${body}`);
+      throw new Error(`${provider} ${model} failed [${response.status}]: ${body}`);
     }
 
     const payload = (await response.json()) as { choices?: { message?: { content?: string } }[] };
     const content = payload.choices?.[0]?.message?.content;
-    if (!content) throw new Error(`Gateway ${model} returned no content`);
+    if (!content) throw new Error(`${provider} ${model} returned no content`);
     return content;
   } finally {
     clearTimeout(timer);
@@ -68,28 +84,40 @@ async function callModel(model: string, system: string, user: string, apiKey: st
 export async function runAnalysisModel(
   input: AnalysisInput,
 ): Promise<{ result: AnalysisResult; model: string }> {
-  const apiKey = process.env.LOVABLE_API_KEY;
-  if (!apiKey) throw new AnalysisError("AI is not configured for this project.");
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
+  if (!lovableKey && !openRouterKey) throw new AnalysisError("AI is not configured for this project.");
 
+  // Build the prompt once and reuse it for whichever provider serves the request.
   const { system, user } = buildAnalysisPrompt(input);
-  const models = [PRIMARY_MODEL, FALLBACK_MODEL];
+
+  const attempts: { provider: Provider; model: string; apiKey?: string }[] = [
+    { provider: "gemini", model: PRIMARY_MODEL, apiKey: lovableKey },
+    { provider: "openrouter", model: FALLBACK_MODEL, apiKey: openRouterKey },
+  ];
+
   let lastError: unknown;
 
-  for (const model of models) {
+  for (const attempt of attempts) {
+    if (!attempt.apiKey) continue;
     try {
-      const raw = await callModel(model, system, user, apiKey);
+      const raw = await callProvider(attempt.provider, attempt.model, system, user, attempt.apiKey);
       const parsed = analysisResultSchema.safeParse(extractJson(raw));
       if (!parsed.success) {
-        throw new Error(`Invalid AI shape from ${model}: ${parsed.error.issues.slice(0, 3).map((i) => i.path.join(".")).join(", ")}`);
+        throw new Error(
+          `Invalid AI shape from ${attempt.model}: ${parsed.error.issues.slice(0, 3).map((i) => i.path.join(".")).join(", ")}`,
+        );
       }
-      return { result: parsed.data, model };
+      // Reported back to the caller and persisted in analysis_logs.model.
+      return { result: parsed.data, model: `${attempt.provider}:${attempt.model}` };
     } catch (error) {
-      if (error instanceof AnalysisError) throw error;
-      console.error("[analysis]", error);
+      console.error(`[analysis] ${attempt.provider} failed`, error);
       lastError = error;
     }
   }
 
-  console.error("[analysis] all models failed", lastError);
-  throw new AnalysisError("The analysis could not be completed. Please try again in a moment.");
+  console.error("[analysis] all providers failed", lastError);
+  throw new AnalysisError(
+    "The analysis could not be completed — both the primary and fallback AI providers failed. Please try again in a few minutes.",
+  );
 }
