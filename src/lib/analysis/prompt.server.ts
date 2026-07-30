@@ -1,10 +1,10 @@
 import type { AnalysisInput } from "./schema";
 
-const SYSTEM_PROMPT = `You are a senior campus placement advisor and ATS specialist.
+export const SYSTEM_PROMPT = `You are a senior campus placement advisor and ATS specialist.
 You evaluate student resumes for a specific target role and return a rigorous, honest, evidence-based assessment.
 You ALWAYS respond with a single JSON object and nothing else. No markdown fences, no commentary.`;
 
-const JSON_CONTRACT = `Return JSON with EXACTLY this shape (all keys required):
+export const JSON_CONTRACT = `Return JSON with EXACTLY this shape (all keys required):
 {
   "overall_score": 0-100,
   "readiness_level": "Beginner" | "Developing" | "Intermediate" | "Advanced" | "Industry Ready",

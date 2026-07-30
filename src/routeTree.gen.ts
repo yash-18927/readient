@@ -16,8 +16,10 @@ import { Route as RecruiterRouteImport } from './routes/recruiter'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as ApplySlugRouteImport } from './routes/apply.$slug'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as JobsJobIdRouteImport } from './routes/jobs.$jobId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
@@ -58,6 +60,11 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApplySlugRoute = ApplySlugRouteImport.update({
+  id: '/apply/$slug',
+  path: '/apply/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
@@ -66,6 +73,11 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobsJobIdRoute = JobsJobIdRouteImport.update({
+  id: '/jobs/$jobId',
+  path: '/jobs/$jobId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
@@ -88,7 +100,9 @@ export interface FileRoutesByFullPath {
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/apply/$slug': typeof ApplySlugRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/jobs/$jobId': typeof JobsJobIdRoute
   '/auth/': typeof AuthIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -101,7 +115,9 @@ export interface FileRoutesByTo {
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/apply/$slug': typeof ApplySlugRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/jobs/$jobId': typeof JobsJobIdRoute
   '/auth': typeof AuthIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -115,7 +131,9 @@ export interface FileRoutesById {
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/apply/$slug': typeof ApplySlugRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/jobs/$jobId': typeof JobsJobIdRoute
   '/auth/': typeof AuthIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -130,7 +148,9 @@ export interface FileRouteTypes {
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/apply/$slug'
     | '/auth/callback'
+    | '/jobs/$jobId'
     | '/auth/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -143,7 +163,9 @@ export interface FileRouteTypes {
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/apply/$slug'
     | '/auth/callback'
+    | '/jobs/$jobId'
     | '/auth'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -156,7 +178,9 @@ export interface FileRouteTypes {
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/apply/$slug'
     | '/auth/callback'
+    | '/jobs/$jobId'
     | '/auth/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
@@ -170,7 +194,9 @@ export interface RootRouteChildren {
   StudentRoute: typeof StudentRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApplySlugRoute: typeof ApplySlugRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  JobsJobIdRoute: typeof JobsJobIdRoute
   AuthIndexRoute: typeof AuthIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -227,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apply/$slug': {
+      id: '/apply/$slug'
+      path: '/apply/$slug'
+      fullPath: '/apply/$slug'
+      preLoaderRoute: typeof ApplySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/': {
       id: '/auth/'
       path: '/auth'
@@ -239,6 +272,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/callback'
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs/$jobId': {
+      id: '/jobs/$jobId'
+      path: '/jobs/$jobId'
+      fullPath: '/jobs/$jobId'
+      preLoaderRoute: typeof JobsJobIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.lovable/oauth/consent': {
@@ -267,7 +307,9 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApplySlugRoute: ApplySlugRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  JobsJobIdRoute: JobsJobIdRoute,
   AuthIndexRoute: AuthIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
