@@ -3,8 +3,11 @@ import { analysisResultSchema, type AnalysisResult } from "@/lib/analysis/schema
 import { buildCandidatePrompt, buildJobStructurePrompt } from "./prompt.server";
 import { jobDraftSchema, type JobDraft, type JobRequirements, type JobRubric } from "./schema";
 
-export async function structureJobPosting(rawInput: string): Promise<{ result: JobDraft; model: string }> {
-  const { system, user } = buildJobStructurePrompt(rawInput);
+export async function structureJobPosting(
+  rawInput: string,
+  hints: { field?: string; targetRole?: string; notes?: string } = {},
+): Promise<{ result: JobDraft; model: string }> {
+  const { system, user } = buildJobStructurePrompt(rawInput, hints);
   return runJsonModel(system, user, jobDraftSchema, "job-structure");
 }
 

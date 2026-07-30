@@ -14,6 +14,7 @@ import {
   createJob,
   deleteJob,
   draftJob,
+  extractJobDocument,
   listJobs,
   updateJob,
   type JobWithStats,
@@ -35,6 +36,18 @@ export const Route = createFileRoute("/recruiter")({
   component: RecruiterDashboard,
 });
 
+function toBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read the file."));
+    reader.onload = () => {
+      const result = String(reader.result);
+      resolve(result.slice(result.indexOf(",") + 1));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function RecruiterDashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -43,6 +56,7 @@ function RecruiterDashboard() {
   const signedIn = Boolean(session);
 
   const draftFn = useServerFn(draftJob);
+  const extractFn = useServerFn(extractJobDocument);
   const createFn = useServerFn(createJob);
   const updateFn = useServerFn(updateJob);
   const deleteFn = useServerFn(deleteJob);
@@ -68,8 +82,17 @@ function RecruiterDashboard() {
 
   const invalidate = () => void queryClient.invalidateQueries({ queryKey: ["jobs"] });
 
+  const extracting = useMutation({
+    mutationFn: async (file: File) => {
+      const base64 = await toBase64(file);
+      const { text } = await extractFn({ data: { fileName: file.name, base64 } });
+      return text;
+    },
+  });
+
   const drafting = useMutation({
-    mutationFn: (rawInput: string) => draftFn({ data: { rawInput } }),
+    mutationFn: (input: { rawInput: string; field?: string; targetRole?: string; notes?: string }) =>
+      draftFn({ data: input }),
     onError: (error) =>
       toast.error("Could not structure the role", {
         description: error instanceof Error ? error.message : "Please try again.",
@@ -143,8 +166,10 @@ function RecruiterDashboard() {
         </div>
       ) : creating ? (
         <JobCreator
+          extracting={extracting.isPending}
+          onExtract={(file) => extracting.mutateAsync(file)}
           drafting={drafting.isPending}
-          onDraft={(rawInput) => drafting.mutateAsync(rawInput)}
+          onDraft={(input) => drafting.mutateAsync(input)}
           publishing={publishing.isPending}
           onPublish={(values) =>
             publishing.mutate({
