@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GetStartedRouteImport } from './routes/get-started'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as RecruiterRouteImport } from './routes/recruiter'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -41,6 +42,11 @@ const McpRoute = McpRouteImport.update({
 const RecruiterRoute = RecruiterRouteImport.update({
   id: '/recruiter',
   path: '/recruiter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudentRoute = StudentRouteImport.update({
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/get-started': typeof GetStartedRoute
   '/mcp': typeof McpRoute
   '/recruiter': typeof RecruiterRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/get-started': typeof GetStartedRoute
   '/mcp': typeof McpRoute
   '/recruiter': typeof RecruiterRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/get-started': typeof GetStartedRoute
   '/mcp': typeof McpRoute
   '/recruiter': typeof RecruiterRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/get-started'
     | '/mcp'
     | '/recruiter'
+    | '/sitemap.xml'
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/get-started'
     | '/mcp'
     | '/recruiter'
+    | '/sitemap.xml'
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/get-started'
     | '/mcp'
     | '/recruiter'
+    | '/sitemap.xml'
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   GetStartedRoute: typeof GetStartedRoute
   McpRoute: typeof McpRoute
   RecruiterRoute: typeof RecruiterRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudentRoute: typeof StudentRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -230,6 +243,13 @@ declare module '@tanstack/react-router' {
       path: '/recruiter'
       fullPath: '/recruiter'
       preLoaderRoute: typeof RecruiterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/student': {
@@ -303,6 +323,7 @@ const rootRouteChildren: RootRouteChildren = {
   GetStartedRoute: GetStartedRoute,
   McpRoute: McpRoute,
   RecruiterRoute: RecruiterRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudentRoute: StudentRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
