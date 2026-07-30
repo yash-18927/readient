@@ -237,7 +237,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      job_is_open: { Args: { _job_id: string }; Returns: boolean }
+      public_job_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          company: string
+          deadline: string
+          id: string
+          rubric: Json
+          status: string
+          structured_requirements: Json
+          title: string
+        }[]
+      }
     }
     Enums: {
       app_role: "student" | "recruiter"
