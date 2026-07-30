@@ -10,10 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as GetStartedRouteImport } from './routes/get-started'
-import { Route as AuthenticatedRecruiterRouteImport } from './routes/_authenticated/recruiter'
-import { Route as AuthenticatedStudentRouteImport } from './routes/_authenticated/student'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 
@@ -22,24 +19,10 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const GetStartedRoute = GetStartedRouteImport.update({
   id: '/get-started',
   path: '/get-started',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRecruiterRoute = AuthenticatedRecruiterRouteImport.update({
-  id: '/recruiter',
-  path: '/recruiter',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedStudentRoute = AuthenticatedStudentRouteImport.update({
-  id: '/student',
-  path: '/student',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
@@ -55,60 +38,32 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
-  '/recruiter': typeof AuthenticatedRecruiterRoute
-  '/student': typeof AuthenticatedStudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/': typeof AuthIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
-  '/recruiter': typeof AuthenticatedRecruiterRoute
-  '/student': typeof AuthenticatedStudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth': typeof AuthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/get-started': typeof GetStartedRoute
-  '/_authenticated/recruiter': typeof AuthenticatedRecruiterRoute
-  '/_authenticated/student': typeof AuthenticatedStudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/': typeof AuthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/get-started'
-    | '/recruiter'
-    | '/student'
-    | '/auth/callback'
-    | '/auth/'
+  fullPaths: '/' | '/get-started' | '/auth/callback' | '/auth/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/get-started'
-    | '/recruiter'
-    | '/student'
-    | '/auth/callback'
-    | '/auth'
-  id:
-    | '__root__'
-    | '/'
-    | '/_authenticated'
-    | '/get-started'
-    | '/_authenticated/recruiter'
-    | '/_authenticated/student'
-    | '/auth/callback'
-    | '/auth/'
+  to: '/' | '/get-started' | '/auth/callback' | '/auth'
+  id: '__root__' | '/' | '/get-started' | '/auth/callback' | '/auth/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   GetStartedRoute: typeof GetStartedRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthIndexRoute: typeof AuthIndexRoute
@@ -123,33 +78,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/get-started': {
       id: '/get-started'
       path: '/get-started'
       fullPath: '/get-started'
       preLoaderRoute: typeof GetStartedRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/recruiter': {
-      id: '/_authenticated/recruiter'
-      path: '/recruiter'
-      fullPath: '/recruiter'
-      preLoaderRoute: typeof AuthenticatedRecruiterRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/student': {
-      id: '/_authenticated/student'
-      path: '/student'
-      fullPath: '/student'
-      preLoaderRoute: typeof AuthenticatedStudentRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/auth/': {
       id: '/auth/'
@@ -168,22 +102,8 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedRecruiterRoute: typeof AuthenticatedRecruiterRoute
-  AuthenticatedStudentRoute: typeof AuthenticatedStudentRoute
-}
-
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedRecruiterRoute: AuthenticatedRecruiterRoute,
-  AuthenticatedStudentRoute: AuthenticatedStudentRoute,
-}
-
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   GetStartedRoute: GetStartedRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthIndexRoute: AuthIndexRoute,
@@ -191,3 +111,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
