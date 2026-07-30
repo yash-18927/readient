@@ -14,6 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
+      analyses: {
+        Row: {
+          created_at: string
+          evidence: Json
+          field: string
+          id: string
+          job_description: string | null
+          overall_score: number
+          result: Json
+          resume_file_name: string | null
+          resume_hash: string
+          resume_text: string
+          target_role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          evidence?: Json
+          field: string
+          id?: string
+          job_description?: string | null
+          overall_score?: number
+          result: Json
+          resume_file_name?: string | null
+          resume_hash: string
+          resume_text: string
+          target_role: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          evidence?: Json
+          field?: string
+          id?: string
+          job_description?: string | null
+          overall_score?: number
+          result?: Json
+          resume_file_name?: string | null
+          resume_hash?: string
+          resume_text?: string
+          target_role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      analysis_cache: {
+        Row: {
+          cache_key: string
+          created_at: string
+          result: Json
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string
+          result: Json
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string
+          result?: Json
+        }
+        Relationships: []
+      }
+      analysis_logs: {
+        Row: {
+          created_at: string
+          field: string | null
+          id: string
+          model: string | null
+          overall_score: number | null
+          session_id: string | null
+          target_role: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          field?: string | null
+          id?: string
+          model?: string | null
+          overall_score?: number | null
+          session_id?: string | null
+          target_role?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          field?: string | null
+          id?: string
+          model?: string | null
+          overall_score?: number | null
+          session_id?: string | null
+          target_role?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
