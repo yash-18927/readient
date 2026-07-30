@@ -11,7 +11,7 @@ export default defineMcp({
   title: "Career Compass",
   version: "0.1.0",
   instructions:
-    "Tools for Career Compass (PlacementIQ), an AI placement readiness platform. Use `get_profile` for the signed-in user's role, `list_analyses` to browse their saved resume readiness analyses, and `get_analysis` to read one full analysis result.",
+    "Tools for Career Compass (Readient), an AI placement readiness platform. Use `get_profile` for the signed-in user's role, `list_analyses` to browse their saved resume readiness analyses, and `get_analysis` to read one full analysis result.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
