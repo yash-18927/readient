@@ -41,7 +41,7 @@ function Landing() {
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <span className="font-display text-lg font-bold tracking-tight">
-          Placement<span className="text-primary">IQ</span>
+          Readient
         </span>
         <Button asChild variant="ghost" size="sm">
           <Link to="/auth">Sign in</Link>
@@ -85,8 +85,8 @@ function Landing() {
 
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <span className="font-display font-semibold text-foreground">PlacementIQ</span>
-          <span>© {new Date().getFullYear()} PlacementIQ. All rights reserved.</span>
+          <span className="font-display font-semibold text-foreground">Readient</span>
+          <span>© {new Date().getFullYear()} Readient. All rights reserved.</span>
         </div>
       </footer>
     </div>

@@ -19,7 +19,7 @@
       {
         "name": "get_profile",
         "title": "Get my profile",
-        "description": "Get the signed-in user's PlacementIQ profile: full name and role (student or recruiter).",
+        "description": "Get the signed-in user's Readient profile: full name and role (student or recruiter).",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,

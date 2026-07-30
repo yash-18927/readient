@@ -23,9 +23,9 @@ export const Route = createFileRoute("/recruiter")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Recruiter workspace — PlacementIQ" },
+      { title: "Recruiter workspace — Readient" },
       { name: "description", content: "Post roles and rank candidates with AI." },
-      { property: "og:title", content: "Recruiter workspace — PlacementIQ" },
+      { property: "og:title", content: "Recruiter workspace — Readient" },
       { property: "og:description", content: "Post roles and rank candidates with AI." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

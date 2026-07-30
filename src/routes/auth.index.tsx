@@ -25,10 +25,10 @@ export const Route = createFileRoute("/auth/")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Sign in — PlacementIQ" },
-      { name: "description", content: "Sign in or create your PlacementIQ account." },
-      { property: "og:title", content: "Sign in — PlacementIQ" },
-      { property: "og:description", content: "Sign in or create your PlacementIQ account." },
+      { title: "Sign in — Readient" },
+      { name: "description", content: "Sign in or create your Readient account." },
+      { property: "og:title", content: "Sign in — Readient" },
+      { property: "og:description", content: "Sign in or create your Readient account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

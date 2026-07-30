@@ -80,13 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PlacementIQ — AI Placement Readiness Platform" },
+      { title: "Readient — AI Placement Readiness Platform" },
       {
         name: "description",
         content:
           "AI-powered resume and readiness analysis for students, and AI job posting plus candidate ranking for recruiters.",
       },
-      { property: "og:title", content: "PlacementIQ — AI Placement Readiness Platform" },
+      { property: "og:title", content: "Readient — AI Placement Readiness Platform" },
       {
         property: "og:description",
         content: "AI readiness analysis for students and AI candidate ranking for recruiters.",

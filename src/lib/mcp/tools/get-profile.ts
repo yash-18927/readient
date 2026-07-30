@@ -5,7 +5,7 @@ export default defineTool({
   name: "get_profile",
   title: "Get my profile",
   description:
-    "Get the signed-in user's PlacementIQ profile: full name and role (student or recruiter).",
+    "Get the signed-in user's Readient profile: full name and role (student or recruiter).",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_input, ctx) => {

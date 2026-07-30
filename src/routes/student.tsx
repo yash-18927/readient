@@ -22,9 +22,9 @@ export const Route = createFileRoute("/student")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Student workspace — PlacementIQ" },
+      { title: "Student workspace — Readient" },
       { name: "description", content: "Upload your resume and get an AI placement readiness score." },
-      { property: "og:title", content: "Student workspace — PlacementIQ" },
+      { property: "og:title", content: "Student workspace — Readient" },
       {
         property: "og:description",
         content: "Upload your resume and get an AI placement readiness score.",

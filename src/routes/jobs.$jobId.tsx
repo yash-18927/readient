@@ -17,9 +17,9 @@ export const Route = createFileRoute("/jobs/$jobId")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Job candidates — PlacementIQ" },
+      { title: "Job candidates — Readient" },
       { name: "description", content: "Ranked applicants for your job posting." },
-      { property: "og:title", content: "Job candidates — PlacementIQ" },
+      { property: "og:title", content: "Job candidates — Readient" },
       { property: "og:description", content: "Ranked applicants for your job posting." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
