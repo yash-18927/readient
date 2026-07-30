@@ -77,7 +77,15 @@ function RecruiterDashboard() {
   });
 
   const publishing = useMutation({
-    mutationFn: (values: Parameters<typeof createFn>[0]["data"]) => createFn({ data: values }),
+    mutationFn: (values: {
+      title: string;
+      company: string;
+      rawInput: string;
+      requirements: JobFormValues["requirements"];
+      rubric: JobFormValues["rubric"];
+      deadline: string | null;
+    }) => createFn({ data: values }),
+
     onSuccess: () => {
       setCreating(false);
       invalidate();
