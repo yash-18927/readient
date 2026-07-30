@@ -165,6 +165,11 @@ function ApplyPage() {
                   ))}
                 </ul>
               )}
+              {posting.requirements.additional_info && (
+                <p className="rounded-xl border border-border bg-muted/40 px-4 py-3 text-muted-foreground">
+                  {posting.requirements.additional_info}
+                </p>
+              )}
               <div className="flex flex-wrap gap-2">
                 {posting.requirements.required_skills.map((skill) => (
                   <Chip key={skill} tone="neutral">
