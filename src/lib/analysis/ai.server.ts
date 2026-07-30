@@ -27,10 +27,6 @@ function extractJson(raw: string): unknown {
   }
 }
 
-async function callModel(model: string, system: string, user: string, apiKey: string): Promise<string> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  try {
 type Provider = "gemini" | "openrouter";
 
 async function callProvider(
