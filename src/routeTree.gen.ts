@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GetStartedRouteImport } from './routes/get-started'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RecruiterRouteImport } from './routes/recruiter'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StudentRouteImport } from './routes/student'
@@ -37,6 +38,11 @@ const GetStartedRoute = GetStartedRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecruiterRoute = RecruiterRouteImport.update({
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
   '/mcp': typeof McpRoute
+  '/privacy': typeof PrivacyRoute
   '/recruiter': typeof RecruiterRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student': typeof StudentRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
   '/mcp': typeof McpRoute
+  '/privacy': typeof PrivacyRoute
   '/recruiter': typeof RecruiterRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student': typeof StudentRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
   '/mcp': typeof McpRoute
+  '/privacy': typeof PrivacyRoute
   '/recruiter': typeof RecruiterRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/student': typeof StudentRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/'
     | '/get-started'
     | '/mcp'
+    | '/privacy'
     | '/recruiter'
     | '/sitemap.xml'
     | '/student'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/'
     | '/get-started'
     | '/mcp'
+    | '/privacy'
     | '/recruiter'
     | '/sitemap.xml'
     | '/student'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/'
     | '/get-started'
     | '/mcp'
+    | '/privacy'
     | '/recruiter'
     | '/sitemap.xml'
     | '/student'
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GetStartedRoute: typeof GetStartedRoute
   McpRoute: typeof McpRoute
+  PrivacyRoute: typeof PrivacyRoute
   RecruiterRoute: typeof RecruiterRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StudentRoute: typeof StudentRoute
@@ -236,6 +249,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recruiter': {
@@ -322,6 +342,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GetStartedRoute: GetStartedRoute,
   McpRoute: McpRoute,
+  PrivacyRoute: PrivacyRoute,
   RecruiterRoute: RecruiterRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StudentRoute: StudentRoute,
