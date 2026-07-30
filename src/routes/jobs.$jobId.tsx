@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -45,9 +45,11 @@ function JobDetailPage() {
     enabled: Boolean(session),
   });
 
-  if (!loading && !session) {
-    navigate({ to: "/auth", search: { role: "recruiter", mode: "signin" }, replace: true });
-  }
+  useEffect(() => {
+    if (!loading && !session) {
+      navigate({ to: "/auth", search: { role: "recruiter", mode: "signin" }, replace: true });
+    }
+  }, [loading, session, navigate]);
 
   const job = detail.data?.job;
   const submissions = detail.data?.submissions ?? [];
