@@ -113,6 +113,51 @@ export type Database = {
         }
         Relationships: []
       }
+      jobs: {
+        Row: {
+          company: string
+          created_at: string
+          deadline: string | null
+          id: string
+          raw_input: string
+          recruiter_id: string
+          rubric: Json
+          share_slug: string
+          status: string
+          structured_requirements: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company?: string
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          raw_input?: string
+          recruiter_id: string
+          rubric?: Json
+          share_slug: string
+          status?: string
+          structured_requirements?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          raw_input?: string
+          recruiter_id?: string
+          rubric?: Json
+          share_slug?: string
+          status?: string
+          structured_requirements?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -139,6 +184,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      submissions: {
+        Row: {
+          analysis_result: Json
+          candidate_email: string | null
+          candidate_name: string | null
+          id: string
+          job_id: string
+          links: Json
+          resume_file_name: string | null
+          resume_text: string
+          score: number
+          submitted_at: string
+        }
+        Insert: {
+          analysis_result: Json
+          candidate_email?: string | null
+          candidate_name?: string | null
+          id?: string
+          job_id: string
+          links?: Json
+          resume_file_name?: string | null
+          resume_text: string
+          score?: number
+          submitted_at?: string
+        }
+        Update: {
+          analysis_result?: Json
+          candidate_email?: string | null
+          candidate_name?: string | null
+          id?: string
+          job_id?: string
+          links?: Json
+          resume_file_name?: string | null
+          resume_text?: string
+          score?: number
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
