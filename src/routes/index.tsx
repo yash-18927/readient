@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AI Placement Readiness Platform — Get hired, hire faster" },
+      { title: "Readient - Ready to Recruit or Get Recruited" },
       {
         name: "description",
         content:
           "AI-powered resume and readiness analysis for students, plus AI job posting and candidate ranking for recruiters.",
       },
-      { property: "og:title", content: "AI Placement Readiness Platform" },
+      { property: "og:title", content: "Readient - Ready to Recruit or Get Recruited" },
       {
         property: "og:description",
         content:
-          "AI-powered readiness analysis for students and AI candidate ranking for recruiters.",
+          "AI-powered resume and readiness analysis for students, plus AI job posting and candidate ranking for recruiters.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

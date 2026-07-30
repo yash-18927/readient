@@ -80,19 +80,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Readient — AI Placement Readiness Platform" },
+      { title: "Readient - Ready to Recruit or Get Recruited" },
       {
         name: "description",
         content:
-          "AI-powered resume and readiness analysis for students, and AI job posting plus candidate ranking for recruiters.",
+          "AI-powered resume and readiness analysis for students, plus AI job posting and candidate ranking for recruiters.",
       },
-      { property: "og:title", content: "Readient — AI Placement Readiness Platform" },
+      { property: "og:title", content: "Readient - Ready to Recruit or Get Recruited" },
       {
         property: "og:description",
-        content: "AI readiness analysis for students and AI candidate ranking for recruiters.",
+        content: "AI-powered resume and readiness analysis for students, plus AI job posting and candidate ranking for recruiters.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Readient - Ready to Recruit or Get Recruited" },
+      { name: "twitter:description", content: "AI-powered resume and readiness analysis for students, plus AI job posting and candidate ranking for recruiters." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/023518c4-44a6-42ba-ab57-1b5b39877a82/id-preview-00edcbaa--7db6f922-d1b0-46fa-9aa3-be1c4a00f0b1.lovable.app-1785428361881.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/023518c4-44a6-42ba-ab57-1b5b39877a82/id-preview-00edcbaa--7db6f922-d1b0-46fa-9aa3-be1c4a00f0b1.lovable.app-1785428361881.png" },
     ],
     links: [
       {
@@ -105,7 +109,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
 
