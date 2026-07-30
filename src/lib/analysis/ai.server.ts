@@ -1,3 +1,4 @@
+import type { ZodType } from "zod";
 import { analysisResultSchema, type AnalysisResult, type AnalysisInput } from "./schema";
 import { buildAnalysisPrompt } from "./prompt.server";
 
@@ -84,7 +85,7 @@ async function callProvider(
 export async function runJsonModel<T>(
   system: string,
   user: string,
-  schema: { safeParse: (input: unknown) => { success: true; data: T } | { success: false; error: { issues: { path: (string | number)[] }[] } } },
+  schema: ZodType<T>,
   label = "analysis",
 ): Promise<{ result: T; model: string }> {
   const lovableKey = process.env.LOVABLE_API_KEY;
