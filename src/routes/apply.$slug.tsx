@@ -106,7 +106,7 @@ function ApplyPage() {
     return <CenteredNotice title="Loading role…" body="Fetching the job posting." />;
   }
 
-  if (!job.data) {
+  if (!job.data?.job) {
     return (
       <CenteredNotice
         title="This job link is not valid"
@@ -115,7 +115,7 @@ function ApplyPage() {
     );
   }
 
-  const posting = job.data;
+  const posting = job.data.job;
 
   if (!posting.accepting) {
     return (

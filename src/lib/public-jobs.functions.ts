@@ -20,22 +20,24 @@ export type PublicJob = {
 /** Public, read-only view of a job posting resolved by its unguessable slug. */
 export const getPublicJob = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => z.object({ slug: z.string().min(8).max(64) }).parse(data))
-  .handler(async ({ data }): Promise<PublicJob | null> => {
+  .handler(async ({ data }): Promise<{ job: PublicJob | null }> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: job } = await supabaseAdmin
       .from("jobs")
       .select("title, company, structured_requirements, status, deadline")
       .eq("share_slug", data.slug)
       .maybeSingle();
-    if (!job) return null;
+    if (!job) return { job: null };
 
     return {
+      job: {
       title: job.title,
       company: job.company,
       requirements: jobRequirementsSchema.parse(job.structured_requirements ?? {}),
       status: job.status,
       deadline: job.deadline,
       accepting: isJobAcceptingSubmissions({ status: job.status, deadline: job.deadline }),
+      },
     };
   });
 
