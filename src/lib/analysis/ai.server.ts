@@ -2,8 +2,12 @@ import { analysisResultSchema, type AnalysisResult, type AnalysisInput } from ".
 import { buildAnalysisPrompt } from "./prompt.server";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const PRIMARY_MODEL = "google/gemini-3.6-flash";
-const FALLBACK_MODEL = "google/gemini-2.5-flash";
+// Fallback: OpenRouter free-tier model selected 2026-07-30.
+// Free models can be rotated/removed without notice — if this 404s, swap it for
+// another ":free" model from https://openrouter.ai/models?order=pricing-low-to-high
+const FALLBACK_MODEL = "deepseek/deepseek-chat-v3-0324:free";
 const TIMEOUT_MS = 120_000;
 
 export class AnalysisError extends Error {}
