@@ -16,6 +16,7 @@ import { Route as RecruiterRouteImport } from './routes/recruiter'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as ApplySlugRouteImport } from './routes/apply.$slug'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as JobsJobIdRouteImport } from './routes/jobs.$jobId'
@@ -59,6 +60,11 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApplySlugRoute = ApplySlugRouteImport.update({
+  id: '/apply/$slug',
+  path: '/apply/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/apply/$slug': typeof ApplySlugRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/jobs/$jobId': typeof JobsJobIdRoute
   '/auth/': typeof AuthIndexRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/apply/$slug': typeof ApplySlugRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/jobs/$jobId': typeof JobsJobIdRoute
   '/auth': typeof AuthIndexRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/student': typeof StudentRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/apply/$slug': typeof ApplySlugRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/jobs/$jobId': typeof JobsJobIdRoute
   '/auth/': typeof AuthIndexRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/apply/$slug'
     | '/auth/callback'
     | '/jobs/$jobId'
     | '/auth/'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/apply/$slug'
     | '/auth/callback'
     | '/jobs/$jobId'
     | '/auth'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/apply/$slug'
     | '/auth/callback'
     | '/jobs/$jobId'
     | '/auth/'
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   StudentRoute: typeof StudentRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApplySlugRoute: typeof ApplySlugRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   JobsJobIdRoute: typeof JobsJobIdRoute
   AuthIndexRoute: typeof AuthIndexRoute
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apply/$slug': {
+      id: '/apply/$slug'
+      path: '/apply/$slug'
+      fullPath: '/apply/$slug'
+      preLoaderRoute: typeof ApplySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/': {
       id: '/auth/'
       path: '/auth'
@@ -287,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApplySlugRoute: ApplySlugRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   JobsJobIdRoute: JobsJobIdRoute,
   AuthIndexRoute: AuthIndexRoute,
