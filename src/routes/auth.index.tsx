@@ -107,16 +107,23 @@ function AuthPage() {
               : "Sign in to reach your dashboard."}
           </p>
 
-          <Tabs
-            value={tab}
-            onValueChange={(value) => setTab(value as "signin" | "signup")}
-            className="mt-6"
-          >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign in</TabsTrigger>
-              <TabsTrigger value="signup">Sign up</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="mt-6 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1">
+            {(["signin", "signup"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setTab(value)}
+                className={
+                  tab === value
+                    ? "rounded-md bg-card px-3 py-2 text-sm font-medium shadow-soft"
+                    : "rounded-md px-3 py-2 text-sm text-muted-foreground"
+                }
+              >
+                {value === "signin" ? "Sign in" : "Sign up"}
+              </button>
+            ))}
+          </div>
+
 
           <Button
             type="button"
