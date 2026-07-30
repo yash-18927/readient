@@ -8,6 +8,28 @@ import {
   type JobRequirements,
 } from "@/lib/jobs/schema";
 
+
+/** Publishable-key server client: RLS applies as anon. */
+async function publicClient() {
+  const { createClient } = await import("@supabase/supabase-js");
+  const { default: type } = { default: null } as { default: null };
+  void type;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  return createClient(process.env.SUPABASE_URL!, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input: RequestInfo | URL, init?: RequestInit) => {
+        const headers = new Headers(init?.headers);
+        if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) {
+          headers.delete("Authorization");
+        }
+        headers.set("apikey", key);
+        return fetch(input, { ...init, headers });
+      },
+    },
+  });
+}
+
 export type PublicJob = {
   title: string;
   company: string;
@@ -21,12 +43,9 @@ export type PublicJob = {
 export const getPublicJob = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => z.object({ slug: z.string().min(8).max(64) }).parse(data))
   .handler(async ({ data }): Promise<{ job: PublicJob | null }> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: job } = await supabaseAdmin
-      .from("jobs")
-      .select("title, company, structured_requirements, status, deadline")
-      .eq("share_slug", data.slug)
-      .maybeSingle();
+    const supabase = await publicClient();
+    const { data: rows } = await supabase.rpc("public_job_by_slug", { _slug: data.slug });
+    const job = rows?.[0];
     if (!job) return { job: null };
 
     return {
@@ -74,15 +93,12 @@ const submissionInput = z.object({
 export const submitApplication = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => submissionInput.parse(data))
   .handler(async ({ data }): Promise<{ score: number; result: AnalysisResult; jobTitle: string }> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const supabase = await publicClient();
     const { scoreCandidate } = await import("@/lib/jobs/ai.server");
     const { AnalysisError } = await import("@/lib/analysis/ai.server");
 
-    const { data: job } = await supabaseAdmin
-      .from("jobs")
-      .select("id, title, company, structured_requirements, rubric, status, deadline")
-      .eq("share_slug", data.slug)
-      .maybeSingle();
+    const { data: rows } = await supabase.rpc("public_job_by_slug", { _slug: data.slug });
+    const job = rows?.[0];
 
     if (!job) throw new Error("This job posting could not be found.");
     if (!isJobAcceptingSubmissions({ status: job.status, deadline: job.deadline })) {
@@ -110,7 +126,7 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     const score = Math.round(result.overall_score);
 
-    const { error } = await supabaseAdmin.from("submissions").insert({
+    const { error } = await supabase.from("submissions").insert({
       job_id: job.id,
       candidate_name: data.candidateName?.trim() || null,
       candidate_email: data.candidateEmail?.trim() || null,
