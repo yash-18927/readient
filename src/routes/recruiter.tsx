@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
-import { JobCreator } from "@/components/jobs/job-creator";
+import { JobCreator, type JobFormValues } from "@/components/jobs/job-creator";
 import { JobList } from "@/components/jobs/job-list";
 import { JobAnalytics } from "@/components/jobs/job-analytics";
 import { setPendingRole, useProfile, useSession } from "@/lib/auth";
