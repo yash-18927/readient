@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GetStartedRouteImport } from './routes/get-started'
+import { Route as StudentRouteImport } from './routes/student'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const GetStartedRoute = GetStartedRouteImport.update({
   id: '/get-started',
   path: '/get-started',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentRoute = StudentRouteImport.update({
+  id: '/student',
+  path: '/student',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
@@ -38,12 +44,14 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
+  '/student': typeof StudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/': typeof AuthIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
+  '/student': typeof StudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth': typeof AuthIndexRoute
 }
@@ -51,20 +59,23 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/get-started': typeof GetStartedRoute
+  '/student': typeof StudentRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/': typeof AuthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/get-started' | '/auth/callback' | '/auth/'
+  fullPaths: '/' | '/get-started' | '/student' | '/auth/callback' | '/auth/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/get-started' | '/auth/callback' | '/auth'
-  id: '__root__' | '/' | '/get-started' | '/auth/callback' | '/auth/'
+  to: '/' | '/get-started' | '/student' | '/auth/callback' | '/auth'
+  id:
+    '__root__' | '/' | '/get-started' | '/student' | '/auth/callback' | '/auth/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GetStartedRoute: typeof GetStartedRoute
+  StudentRoute: typeof StudentRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   AuthIndexRoute: typeof AuthIndexRoute
 }
@@ -83,6 +94,13 @@ declare module '@tanstack/react-router' {
       path: '/get-started'
       fullPath: '/get-started'
       preLoaderRoute: typeof GetStartedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student': {
+      id: '/student'
+      path: '/student'
+      fullPath: '/student'
+      preLoaderRoute: typeof StudentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/': {
@@ -105,6 +123,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GetStartedRoute: GetStartedRoute,
+  StudentRoute: StudentRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   AuthIndexRoute: AuthIndexRoute,
 }

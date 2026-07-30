@@ -48,7 +48,7 @@ function GetStarted() {
       <div className="mx-auto w-full max-w-4xl flex-1 px-6 pb-24">
         <h1 className="text-3xl font-bold sm:text-4xl">How will you use PlacementIQ?</h1>
         <p className="mt-3 text-muted-foreground">
-          This sets up your account and dashboard. You can only pick one.
+          Pick one to open your workspace — you&apos;ll only need an account when you run an analysis.
         </p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -58,7 +58,7 @@ function GetStarted() {
               type="button"
               onClick={() => {
                 setPendingRole(option.role);
-                navigate({ to: "/auth", search: { role: option.role, mode: "signup" } });
+                navigate({ to: dashboardPath(option.role) });
               }}
               className="group rounded-2xl border border-border bg-card p-8 text-left shadow-soft transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lift"
             >
