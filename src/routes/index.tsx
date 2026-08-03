@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { playIntroTransition } from "@/components/intro-transition";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -89,6 +90,7 @@ function ScoreRing() {
 }
 
 function Landing() {
+  const navigate = useNavigate();
   return (
     <div className="landing-noir flex min-h-screen flex-col">
       <header className="mx-auto w-full max-w-6xl px-6 pt-8 sm:pt-10">
@@ -115,12 +117,13 @@ function Landing() {
               are to being hired for the role you actually want.
             </p>
 
-            <Link
-              to="/student"
+            <button
+              type="button"
+              onClick={() => playIntroTransition(() => navigate({ to: "/get-started" }))}
               className="mt-12 inline-block border-b border-primary pb-1 text-sm text-foreground transition-colors hover:text-primary"
             >
               Run your first scan →
-            </Link>
+            </button>
           </div>
 
           <div className="flex justify-center lg:justify-end">

@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { IntroTransition } from "@/components/intro-transition";
 
 
 function NotFoundComponent() {
@@ -150,7 +151,7 @@ function RootComponent() {
       <Toaster />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-
+      <IntroTransition />
     </QueryClientProvider>
   );
 }
