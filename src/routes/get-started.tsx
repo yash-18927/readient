@@ -73,9 +73,25 @@ function PathVisual() {
 
 function GetStarted() {
   const navigate = useNavigate();
+  // Content is mounted immediately but stays invisible until the wipe has
+  // fully passed, then fades in — no load gap, no pop.
+  const [hidden, setHidden] = useState(() => introRevealDelay() > 0);
+
+  useEffect(() => {
+    const delay = introRevealDelay();
+    if (delay <= 0) {
+      setHidden(false);
+      return;
+    }
+    const t = window.setTimeout(() => setHidden(false), delay);
+    return () => window.clearTimeout(t);
+  }, []);
 
   return (
     <div className="role-warm flex min-h-screen flex-col">
+      <div
+        className={hidden ? "flex min-h-screen flex-col opacity-0" : "intro-reveal flex min-h-screen flex-col"}
+      >
       <header className="mx-auto w-full max-w-3xl px-6 py-8">
         <Link
           to="/"
