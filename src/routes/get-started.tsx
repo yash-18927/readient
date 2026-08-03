@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { ArrowLeft, GraduationCap, Briefcase } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { dashboardPath, setPendingRole, type AppRole } from "@/lib/auth";
 
 export const Route = createFileRoute("/get-started")({
@@ -17,41 +16,92 @@ export const Route = createFileRoute("/get-started")({
   component: GetStarted,
 });
 
-const options: { role: AppRole; icon: typeof GraduationCap; title: string; body: string }[] = [
+const steps = [
+  { label: "Scan", caption: "Read the material", fill: "var(--warm-accent)" },
+  { label: "Gaps", caption: "See what's missing", fill: "var(--warm-accent-soft)" },
+  { label: "Apply", caption: "Move on the role", fill: "transparent" },
+];
+
+const options: { role: AppRole; title: string; body: string }[] = [
   {
     role: "student",
-    icon: GraduationCap,
     title: "I'm a Student",
     body: "Analyse my resume, score my readiness and see what to improve next.",
   },
   {
     role: "recruiter",
-    icon: Briefcase,
     title: "I'm a Recruiter",
     body: "Post roles with AI assistance and rank incoming candidates automatically.",
   },
 ];
 
+function PathVisual() {
+  return (
+    <div className="mt-14 flex items-start">
+      {steps.map((step, i) => (
+        <div key={step.label} className="flex flex-1 items-start last:flex-none">
+          <div className="flex w-24 shrink-0 flex-col items-center text-center">
+            <span
+              className="animate-step-in flex size-12 items-center justify-center rounded-full border-2 text-sm font-medium"
+              style={{
+                animationDelay: `${i * 150}ms`,
+                backgroundColor: step.fill,
+                borderColor: step.fill === "transparent" ? "var(--warm-accent-soft)" : step.fill,
+                color: step.fill === "transparent" ? "var(--warm-accent)" : "#faf7f2",
+              }}
+            >
+              {i + 1}
+            </span>
+            <span className="mt-3 text-sm font-medium">{step.label}</span>
+            <span className="mt-1 text-xs" style={{ color: "var(--warm-muted)" }}>
+              {step.caption}
+            </span>
+          </div>
+          {i < steps.length - 1 && (
+            <span
+              className="animate-fade-in mt-6 h-px flex-1"
+              style={{ backgroundColor: "var(--warm-line)", animationDelay: `${i * 150 + 120}ms` }}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function GetStarted() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <div className="mx-auto w-full max-w-4xl px-6 py-8">
-        <Button asChild variant="ghost" size="sm">
-          <Link to="/">
-            <ArrowLeft className="mr-2 size-4" /> Back
-          </Link>
-        </Button>
-      </div>
+    <div className="role-warm flex min-h-screen flex-col">
+      <header className="mx-auto w-full max-w-3xl px-6 py-8">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm"
+          style={{ color: "var(--warm-muted)" }}
+        >
+          <ArrowLeft className="size-4" /> Back
+        </Link>
+      </header>
 
-      <div className="mx-auto w-full max-w-4xl flex-1 px-6 pb-24">
-        <h1 className="text-3xl font-bold sm:text-4xl">How will you use Readient?</h1>
-        <p className="mt-3 text-muted-foreground">
-          Pick one to open your workspace — you&apos;ll only need an account when you run an analysis.
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 pb-24">
+        <p
+          className="font-mono text-xs tracking-[0.2em] uppercase"
+          style={{ color: "var(--warm-eyebrow)" }}
+        >
+          From resume to role
+        </p>
+        <h1 className="mt-5 max-w-xl text-4xl leading-[1.15] font-medium sm:text-5xl">
+          Three stops between you and the offer.
+        </h1>
+        <p className="mt-5 max-w-lg text-base leading-relaxed" style={{ color: "var(--warm-muted)" }}>
+          Whether you&apos;re preparing for placements or hiring for them, the path is the same
+          — see clearly, close the gaps, then make the move.
         </p>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2">
+        <PathVisual />
+
+        <div className="mt-20 grid gap-4 sm:grid-cols-2">
           {options.map((option) => (
             <button
               key={option.role}
@@ -60,18 +110,25 @@ function GetStarted() {
                 setPendingRole(option.role);
                 navigate({ to: dashboardPath(option.role) });
               }}
-              className="group rounded-2xl border border-border bg-card p-8 text-left shadow-soft transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lift"
+              className="rounded-3xl border p-7 text-left transition-colors"
+              style={{ borderColor: "var(--warm-line)", backgroundColor: "#fffdfa" }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--warm-accent-soft)")}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--warm-line)")}
             >
-              <div className="flex size-12 items-center justify-center rounded-xl bg-secondary text-primary">
-                <option.icon className="size-6" />
-              </div>
-              <h2 className="mt-6 text-xl font-semibold">{option.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{option.body}</p>
-              <span className="mt-6 inline-block text-sm font-medium text-primary">Continue →</span>
+              <h2 className="text-lg font-medium">{option.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--warm-muted)" }}>
+                {option.body}
+              </p>
+              <span
+                className="mt-6 inline-block text-sm font-medium"
+                style={{ color: "var(--warm-accent)" }}
+              >
+                Continue →
+              </span>
             </button>
           ))}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
