@@ -269,6 +269,7 @@ function ApplyPage() {
                   {submission.isPending ? "Scoring your resume…" : "Submit application"}
                 </Button>
               </div>
+            </div>
           </Section>
         </div>
       )}
