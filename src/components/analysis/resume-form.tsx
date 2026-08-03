@@ -264,11 +264,8 @@ export function ResumeForm({
       </Card>
 
       {evidenceKeys.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">3. Evidence of competence (optional)</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
+        <Section index="03" title="Evidence of competence (optional)">
+          <div className="grid gap-4 sm:grid-cols-2">
             {evidenceKeys.map((key) => {
               const meta = EVIDENCE_LABELS[key];
               return (
@@ -293,8 +290,9 @@ export function ResumeForm({
                 </div>
               );
             })}
-          </CardContent>
-        </Card>
+          </div>
+        </Section>
+
       )}
 
       <div className="flex justify-end">
