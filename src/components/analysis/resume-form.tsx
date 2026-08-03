@@ -125,7 +125,7 @@ export function ResumeForm({
 
   return (
     <form
-      className="space-y-6"
+      className="space-y-10"
       onSubmit={(event) => {
         event.preventDefault();
         if (!canSubmit) return;
@@ -145,7 +145,7 @@ export function ResumeForm({
         <div>
 
           {resumeText ? (
-            <div className="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/40 px-4 py-3">
+            <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-transparent px-4 py-3">
               <div className="flex min-w-0 items-center gap-3">
                 <FileText className="size-5 shrink-0 text-primary" />
                 <div className="min-w-0">
@@ -186,7 +186,7 @@ export function ResumeForm({
                 if (file) void handleFile(file);
               }}
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
+                "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-14 text-center transition-colors",
                 dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
               )}
             >
@@ -317,7 +317,7 @@ export function ResumeForm({
       )}
 
       <div className="flex justify-end">
-        <Button type="submit" size="lg" disabled={!canSubmit}>
+        <Button type="submit" size="lg" className="rounded-lg" disabled={!canSubmit}>
           {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
           {submitting ? "Analysing your readiness…" : "Analyse my readiness"}
         </Button>
