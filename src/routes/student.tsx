@@ -138,14 +138,17 @@ function StudentDashboard() {
   function handleSubmit(values: ResumeFormValues) {
     if (!signedIn) {
       setPrefill(values);
+      window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(values));
       toast.info("Sign in to run your analysis", {
         description: "Your inputs are kept so you can pick up right where you left off.",
       });
       goToAuth("signup");
       return;
     }
+    window.sessionStorage.removeItem(DRAFT_KEY);
     analysis.mutate(values);
   }
+
 
   return (
     <DashboardLayout
