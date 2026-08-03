@@ -162,22 +162,31 @@ function StudentDashboard() {
       navItems={[{ label: "Overview", active: true }, { label: "Resume" }, { label: "Readiness" }]}
     >
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="no-print">
-          <TabsTrigger value="analyse">New analysis</TabsTrigger>
-          <TabsTrigger value="results" disabled={!active}>
-            Results
-          </TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+        <TabsList className="no-print h-auto w-full justify-start gap-6 rounded-none border-b border-border bg-transparent p-0">
+          {[
+            { value: "analyse", label: "New analysis", disabled: false },
+            { value: "results", label: "Results", disabled: !active },
+            { value: "history", label: "History", disabled: false },
+          ].map((item) => (
+            <TabsTrigger
+              key={item.value}
+              value={item.value}
+              disabled={item.disabled}
+              className="-mb-px rounded-none border-b border-transparent bg-transparent px-0 pb-3 text-sm text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              {item.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="analyse" className="space-y-6 pt-6">
+        <TabsContent value="analyse" className="space-y-8 pt-10">
           {!loading && !signedIn && (
-            <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-primary/30 bg-primary/5 px-5 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-primary/30 bg-primary/5 px-5 py-4">
               <p className="text-sm">
                 Fill this in now — you&apos;ll be asked to sign in when you run the analysis so we can
                 save your report.
               </p>
-              <Button size="sm" variant="outline" onClick={() => goToAuth("signin")}>
+              <Button size="sm" variant="outline" className="rounded-lg" onClick={() => goToAuth("signin")}>
                 Sign in
               </Button>
             </div>
@@ -191,13 +200,13 @@ function StudentDashboard() {
           />
         </TabsContent>
 
-        <TabsContent value="results" className="pt-6">
+        <TabsContent value="results" className="pt-10">
           {active ? (
             <ResultsDashboard record={active} onReanalyze={() => reanalyzeFrom(active)} />
           ) : null}
         </TabsContent>
 
-        <TabsContent value="history" className="pt-6">
+        <TabsContent value="history" className="pt-10">
           {signedIn ? (
             <HistoryList
               records={history.data ?? []}
@@ -210,12 +219,14 @@ function StudentDashboard() {
               onDelete={(record) => removal.mutate(record.id)}
             />
           ) : (
-            <div className="rounded-2xl border border-dashed border-border bg-card/60 p-12 text-center">
-              <h2 className="text-lg font-semibold">Sign in to see your history</h2>
-              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+            <div className="rounded-lg border border-dashed border-border bg-transparent p-12">
+              <h2 className="text-base font-medium tracking-tight text-foreground">
+                Sign in to see your history
+              </h2>
+              <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
                 Past analyses are saved to your account so you can track your score over time.
               </p>
-              <Button className="mt-6" onClick={() => goToAuth("signin")}>
+              <Button className="mt-6 rounded-lg" onClick={() => goToAuth("signin")}>
                 Sign in
               </Button>
             </div>
