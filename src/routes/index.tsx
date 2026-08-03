@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { playIntroTransition } from "@/components/intro-transition";
 
 export const Route = createFileRoute("/")({
   head: () => ({
