@@ -194,11 +194,9 @@ export function ResumeForm({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">2. Target role</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
+      <Section index="02" title="Target role">
+        <div className="grid gap-4 sm:grid-cols-2">
+
           <div className="space-y-2">
             <Label>Field of study</Label>
             <Select
