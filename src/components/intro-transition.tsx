@@ -89,7 +89,7 @@ export function IntroTransition() {
     <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden" aria-hidden="true">
       <div className="intro-curtain absolute inset-y-0 left-0 w-[62vw]">
         <div
-          className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2"
+          className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 rotate-[22deg]"
           style={{ color: "#d85a30" }}
         >
           <PaperPlane />
