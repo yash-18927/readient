@@ -46,22 +46,15 @@ export function introRevealDelay() {
 export const INTRO_CONTENT_FADE_MS = CONTENT_FADE_MS;
 
 /**
- * Plays the wipe once per session, navigating at the moment the screen is
- * fully covered. Later clicks (and reduced-motion users) navigate instantly.
+ * Plays the wipe on every click, navigating at the moment the screen is
+ * fully covered. Reduced-motion users navigate instantly.
  */
 export function playIntroTransition(navigate: () => void) {
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || prefersReducedMotion()) {
     navigate();
     return;
   }
 
-  const seen = window.sessionStorage.getItem(SESSION_KEY) === "1";
-  if (seen || prefersReducedMotion()) {
-    navigate();
-    return;
-  }
-
-  window.sessionStorage.setItem(SESSION_KEY, "1");
   window.__readientIntroRevealAt = Date.now() + INTRO_TOTAL_MS;
   window.dispatchEvent(new CustomEvent(EVENT));
   window.setTimeout(navigate, COVER_AT_MS);
