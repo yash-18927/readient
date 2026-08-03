@@ -62,6 +62,7 @@ export function DashboardLayout({
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             {signedIn ? (
               <>
                 <span className="hidden text-sm text-muted-foreground sm:inline">

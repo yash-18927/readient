@@ -86,6 +86,8 @@ export function SiteHeader() {
             ))}
           </nav>
 
+          <ThemeToggle />
+
           {canInstall && (
             <Button
               variant="ghost"
