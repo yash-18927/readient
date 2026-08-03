@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { playIntroTransition } from "@/components/intro-transition";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -102,8 +103,9 @@ function Landing() {
 
   return (
     <div className="landing-noir flex min-h-screen flex-col">
-      <header className="mx-auto w-full max-w-6xl px-6 pt-8 sm:pt-10">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 pt-8 sm:pt-10">
         <span className="text-sm font-medium tracking-tight text-foreground">Readient</span>
+        <ThemeToggle />
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 items-center px-6 py-20 sm:py-28">

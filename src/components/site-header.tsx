@@ -22,6 +22,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const primaryNav = [
   { label: "Home", to: "/", icon: Home },
@@ -84,6 +85,8 @@ export function SiteHeader() {
               </Link>
             ))}
           </nav>
+
+          <ThemeToggle />
 
           {canInstall && (
             <Button

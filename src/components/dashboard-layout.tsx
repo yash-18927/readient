@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { AppRole, Profile } from "@/lib/auth";
 
 export type NavItem = { label: string; active?: boolean };
@@ -61,6 +62,7 @@ export function DashboardLayout({
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             {signedIn ? (
               <>
                 <span className="hidden text-sm text-muted-foreground sm:inline">
