@@ -128,35 +128,34 @@ function ApplyPage() {
 
   return (
     <main className="mx-auto w-full max-w-4xl px-6 py-12">
-      <header className="mb-8">
-        <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
-          Readient
+      <header className="mb-12">
+        <Link
+          to="/"
+          className="text-[0.7rem] tracking-[0.28em] text-muted-foreground transition-colors hover:text-foreground"
+          style={MONO}
+        >
+          READIENT
         </Link>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight">{posting.title}</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="mt-6 text-3xl font-light tracking-tight">{posting.title}</h1>
+        <p className="mt-2 text-muted-foreground">
           {posting.company || "Confidential company"} · {posting.requirements.experience_level}
         </p>
       </header>
 
       {outcome ? (
-        <div className="space-y-6">
-          <Card className="border-primary/30 bg-primary/5">
-            <CardContent className="py-8 text-center">
-              <p className="text-5xl font-bold tabular-nums">{outcome.score}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Your fit score for {posting.title} — your application has been sent to the recruiter.
-              </p>
-            </CardContent>
-          </Card>
+        <div className="space-y-10">
+          <div className="rounded-lg border border-primary/40 px-6 py-10 text-center">
+            <p className="text-5xl font-light tabular-nums text-primary">{outcome.score}</p>
+            <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
+              Your fit score for {posting.title} — your application has been sent to the recruiter.
+            </p>
+          </div>
           <CandidateReport result={outcome.result} />
         </div>
       ) : (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">About the role</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm leading-relaxed">
+        <div className="space-y-10">
+          <Section index="01" title="About the role">
+            <div className="space-y-4 text-sm leading-relaxed">
               <p>{posting.requirements.summary}</p>
               {posting.requirements.responsibilities.length > 0 && (
                 <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
@@ -166,25 +165,26 @@ function ApplyPage() {
                 </ul>
               )}
               {posting.requirements.additional_info && (
-                <p className="rounded-xl border border-border bg-muted/40 px-4 py-3 text-muted-foreground">
+                <p className="rounded-lg border border-border px-4 py-3 text-muted-foreground">
                   {posting.requirements.additional_info}
                 </p>
               )}
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
                 {posting.requirements.required_skills.map((skill) => (
-                  <Chip key={skill} tone="neutral">
-                    {skill}
-                  </Chip>
+                  <span
+                    key={skill}
+                    className="text-[0.65rem] tracking-[0.18em] text-muted-foreground"
+                    style={MONO}
+                  >
+                    {skill.toUpperCase()}
+                  </span>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </Section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Your application</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
+          <Section index="02" title="Your application">
+            <div className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="cand-name">Full name (optional)</Label>
