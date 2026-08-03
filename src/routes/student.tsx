@@ -49,6 +49,9 @@ function toBase64(file: File): Promise<string> {
   });
 }
 
+const DRAFT_KEY = "readient.student_draft";
+
+
 function StudentDashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -64,6 +67,18 @@ function StudentDashboard() {
   const [tab, setTab] = useState("analyse");
   const [active, setActive] = useState<AnalysisRecord | null>(null);
   const [prefill, setPrefill] = useState<ResumeFormValues | null>(null);
+
+  // Restore inputs saved before a sign-in detour.
+  useEffect(() => {
+    const saved = window.sessionStorage.getItem(DRAFT_KEY);
+    if (!saved) return;
+    try {
+      setPrefill(JSON.parse(saved) as ResumeFormValues);
+    } catch {
+      window.sessionStorage.removeItem(DRAFT_KEY);
+    }
+  }, []);
+
 
   // Recruiters land on their own workspace.
   useEffect(() => {
