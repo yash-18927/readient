@@ -147,6 +147,7 @@ function GetStarted() {
           ))}
         </div>
       </main>
+      </div>
     </div>
   );
 }
