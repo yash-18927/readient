@@ -299,8 +299,7 @@ export function JobCreator({
                 placeholder="Anything the documents miss: location, work mode, stipend, must-have tools, screening priorities…"
               />
             </div>
-          </CardContent>
-        </Card>
+          </Section>
 
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={onCancel}>
@@ -329,12 +328,9 @@ export function JobCreator({
   const weightTotal = Object.values(draft.rubric.pillar_weights).reduce((a, b) => a + b, 0);
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">3. Review the posting</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
+    <div className="space-y-10">
+
+      <Section index="03" title="Review the posting" className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="job-title">Job title</Label>
             <Input
@@ -422,14 +418,9 @@ export function JobCreator({
               onChange={(e) => patchReq({ nice_to_have_skills: commasToList(e.target.value) })}
             />
           </div>
-        </CardContent>
-      </Card>
+      </Section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">4. Scoring rubric</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <Section index="04" title="Scoring rubric" className="space-y-4">
           <p className="text-sm text-muted-foreground">
             Emphasis per pillar, tailored to this role. Total: {weightTotal}%
           </p>
@@ -487,8 +478,7 @@ export function JobCreator({
               }
             />
           </div>
-        </CardContent>
-      </Card>
+      </Section>
 
       <div className="flex justify-end gap-2">
         <Button variant="ghost" onClick={() => setDraft(null)}>
