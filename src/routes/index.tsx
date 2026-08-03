@@ -90,6 +90,7 @@ function ScoreRing() {
 }
 
 function Landing() {
+  const navigate = useNavigate();
   return (
     <div className="landing-noir flex min-h-screen flex-col">
       <header className="mx-auto w-full max-w-6xl px-6 pt-8 sm:pt-10">
