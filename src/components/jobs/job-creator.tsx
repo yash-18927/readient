@@ -145,12 +145,8 @@ export function JobCreator({
 
   if (!draft) {
     return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">1. Upload the source material</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      <div className="space-y-10">
+        <Section index="01" title="Upload the source material" className="space-y-4">
             <div
               role="button"
               tabIndex={0}
@@ -237,14 +233,9 @@ export function JobCreator({
                 placeholder="Paste the hiring email, recruitment sheet, or freeform description of the role."
               />
             </div>
-          </CardContent>
-        </Card>
+        </Section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">2. Guide the AI (optional)</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
+        <Section index="02" title="Guide the AI (optional)" className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Background / field</Label>
               <Select
