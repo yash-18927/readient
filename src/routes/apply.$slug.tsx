@@ -269,8 +269,7 @@ function ApplyPage() {
                   {submission.isPending ? "Scoring your resume…" : "Submit application"}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+          </Section>
         </div>
       )}
     </main>
@@ -280,9 +279,15 @@ function ApplyPage() {
 function CenteredNotice({ title, body }: { title: string; body: string }) {
   return (
     <main className="mx-auto flex min-h-[60vh] w-full max-w-xl flex-col items-center justify-center px-6 text-center">
-      <h1 className="text-2xl font-semibold">{title}</h1>
+      <p
+        className="text-[0.7rem] tracking-[0.28em] text-muted-foreground"
+        style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}
+      >
+        READIENT
+      </p>
+      <h1 className="mt-6 text-2xl font-light tracking-tight">{title}</h1>
       <p className="mt-3 text-sm text-muted-foreground">{body}</p>
-      <Button asChild className="mt-6" variant="outline">
+      <Button asChild className="mt-8" variant="outline">
         <Link to="/">Back to Readient</Link>
       </Button>
     </main>
