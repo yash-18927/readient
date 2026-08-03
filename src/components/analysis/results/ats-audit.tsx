@@ -1,16 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+const TAB =
+  "rounded-none border-0 border-b-2 border-transparent bg-transparent px-0 pb-3 text-sm text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none";
 import { ATS_FACTOR_META, type AnalysisResult } from "@/lib/analysis/schema";
-import { BulletList, Chip, Gauge, ScoreBar } from "./primitives";
+import { BulletList, Chip, Gauge, Panel, ScoreBar } from "./primitives";
 
 export function AtsAudit({ result }: { result: AnalysisResult }) {
   const ats = result.ats;
   return (
-    <Card className="print-block">
-      <CardHeader>
-        <CardTitle className="text-base">ATS compatibility audit</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-8">
+    <Panel title="ATS compatibility audit" className="space-y-8">
         <div className="grid gap-8 lg:grid-cols-[auto_1fr]">
           <div className="flex justify-center">
             <Gauge value={ats.total} />
@@ -23,11 +21,11 @@ export function AtsAudit({ result }: { result: AnalysisResult }) {
         </div>
 
         <Tabs defaultValue="recommendations">
-          <TabsList className="flex-wrap">
-            <TabsTrigger value="recommendations">AI Recommendations</TabsTrigger>
-            <TabsTrigger value="keywords">Keywords & Skills</TabsTrigger>
-            <TabsTrigger value="format">Format & Sections</TabsTrigger>
-            <TabsTrigger value="content">Content & Verbs</TabsTrigger>
+          <TabsList className="h-auto flex-wrap gap-6 rounded-none border-b border-border bg-transparent p-0">
+            <TabsTrigger className={TAB} value="recommendations">AI Recommendations</TabsTrigger>
+            <TabsTrigger className={TAB} value="keywords">Keywords & Skills</TabsTrigger>
+            <TabsTrigger className={TAB} value="format">Format & Sections</TabsTrigger>
+            <TabsTrigger className={TAB} value="content">Content & Verbs</TabsTrigger>
           </TabsList>
 
           <TabsContent value="recommendations" className="pt-4">
@@ -119,7 +117,6 @@ export function AtsAudit({ result }: { result: AnalysisResult }) {
             </div>
           </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+    </Panel>
   );
 }

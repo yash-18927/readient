@@ -1,45 +1,32 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { AnalysisResult } from "@/lib/analysis/schema";
-import { BulletList } from "./primitives";
+import { BulletList, MONO, Panel } from "./primitives";
+
+const TAB =
+  "rounded-none border-0 border-b-2 border-transparent bg-transparent px-0 pb-3 text-sm text-muted-foreground shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none";
 
 export function StrengthsWeaknesses({ result }: { result: AnalysisResult }) {
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <Card className="print-block">
-        <CardHeader>
-          <CardTitle className="text-base text-success">Strengths</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <BulletList items={result.strengths} />
-        </CardContent>
-      </Card>
-      <Card className="print-block">
-        <CardHeader>
-          <CardTitle className="text-base text-destructive">Weaknesses</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <BulletList items={result.weaknesses} />
-        </CardContent>
-      </Card>
+    <div className="grid gap-8 lg:grid-cols-2">
+      <Panel title="Strengths">
+        <BulletList items={result.strengths} />
+      </Panel>
+      <Panel title="Weaknesses">
+        <BulletList items={result.weaknesses} />
+      </Panel>
     </div>
   );
 }
 
 export function PriorityRecommendations({ result }: { result: AnalysisResult }) {
   return (
-    <Card className="print-block">
-      <CardHeader>
-        <CardTitle className="text-base">Top 3 priority recommendations</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-3">
+    <Panel title="Top 3 priority recommendations" className="grid gap-4 md:grid-cols-3">
         {result.recommendations.map((rec, index) => (
-          <div key={rec.skill} className="rounded-xl border border-border bg-muted/30 p-5">
-            <span className="grid size-8 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-              {index + 1}
+          <div key={rec.skill} className="rounded-lg border border-border p-5">
+            <span className="text-[0.7rem] tracking-[0.22em] text-primary" style={MONO}>
+              #{String(index + 1).padStart(2, "0")}
             </span>
-            <h3 className="mt-3 font-semibold">{rec.skill}</h3>
+            <h3 className="mt-3 font-medium">{rec.skill}</h3>
             <p className="mt-2 text-sm text-muted-foreground">{rec.reason}</p>
             <p className="mt-3 text-sm">
               <span className="font-medium">Start with: </span>
@@ -47,8 +34,7 @@ export function PriorityRecommendations({ result }: { result: AnalysisResult }) 
             </p>
           </div>
         ))}
-      </CardContent>
-    </Card>
+    </Panel>
   );
 }
 
@@ -61,15 +47,11 @@ export function Roadmap({ result }: { result: AnalysisResult }) {
   ] as const;
 
   return (
-    <Card className="print-block">
-      <CardHeader>
-        <CardTitle className="text-base">Your 3-month roadmap</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Panel title="Your 3-month roadmap">
         <Tabs defaultValue="weeks_1_2">
-          <TabsList className="flex-wrap">
+          <TabsList className="h-auto flex-wrap gap-6 rounded-none border-b border-border bg-transparent p-0">
             {stages.map((s) => (
-              <TabsTrigger key={s.key} value={s.key}>
+              <TabsTrigger className={TAB} key={s.key} value={s.key}>
                 {s.label}
               </TabsTrigger>
             ))}
@@ -81,8 +63,7 @@ export function Roadmap({ result }: { result: AnalysisResult }) {
             </TabsContent>
           ))}
         </Tabs>
-      </CardContent>
-    </Card>
+    </Panel>
   );
 }
 
@@ -95,39 +76,32 @@ export function InterviewQuestions({ result }: { result: AnalysisResult }) {
   ] as const;
 
   return (
-    <Card className="print-block">
-      <CardHeader>
-        <CardTitle className="text-base">Interview questions to prepare</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-6 md:grid-cols-2">
+    <Panel title="Interview questions to prepare" className="grid gap-6 md:grid-cols-2">
         {groups.map((group) => (
           <div key={group.key}>
             <p className="mb-2 text-sm font-medium">{group.label}</p>
             <BulletList items={result.interview_questions[group.key]} />
           </div>
         ))}
-      </CardContent>
-    </Card>
+    </Panel>
   );
 }
 
 export function ProjectSuggestions({ result }: { result: AnalysisResult }) {
   return (
-    <Card className="print-block">
-      <CardHeader>
-        <CardTitle className="text-base">Projects that would close your gaps</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-3">
+    <Panel title="Projects that would close your gaps" className="grid gap-4 md:grid-cols-3">
         {result.project_suggestions.map((project) => (
-          <div key={project.name} className="flex flex-col rounded-xl border border-border p-5">
+          <div key={project.name} className="flex flex-col rounded-lg border border-border p-5">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-semibold">{project.name}</h3>
-              <Badge variant="secondary">{project.difficulty}</Badge>
+              <h3 className="font-medium">{project.name}</h3>
+              <span className="text-[0.65rem] tracking-[0.18em] text-muted-foreground" style={MONO}>
+                {project.difficulty.toUpperCase()}
+              </span>
             </div>
             <p className="mt-2 flex-1 text-sm text-muted-foreground">{project.description}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {project.skills.map((skill) => (
-                <span key={skill} className="rounded-md bg-muted px-2 py-0.5 text-xs">
+                <span key={skill} className="rounded-md border border-border px-2 py-0.5 text-xs text-muted-foreground">
                   {skill}
                 </span>
               ))}
@@ -135,7 +109,6 @@ export function ProjectSuggestions({ result }: { result: AnalysisResult }) {
             <p className="mt-3 text-xs text-muted-foreground">Est. {project.estimated_time}</p>
           </div>
         ))}
-      </CardContent>
-    </Card>
+    </Panel>
   );
 }
