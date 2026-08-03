@@ -23,7 +23,7 @@ export function ScoreOverview({ result }: { result: AnalysisResult }) {
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
-      <Panel title="Overall readiness" className="lg:col-span-1">
+      <Panel title="Overall readiness" wrapperClassName="lg:col-span-1">
         <div className="flex flex-col items-center gap-3 text-center">
           <span className="font-display text-6xl font-light tabular-nums">
             {Math.round(result.overall_score)}
@@ -46,7 +46,7 @@ export function ScoreOverview({ result }: { result: AnalysisResult }) {
         </div>
       </Panel>
 
-      <Panel title="Sub-scores" className="grid gap-4 sm:grid-cols-2">
+      <Panel title="Sub-scores" wrapperClassName="lg:col-span-2" className="grid gap-4 sm:grid-cols-2">
         {SUB_SCORE_META.map((meta) => (
           <ScoreBar key={meta.key} label={meta.label} value={result.sub_scores[meta.key]} />
         ))}

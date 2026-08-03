@@ -49,13 +49,15 @@ export function Panel({
   title,
   children,
   className,
+  wrapperClassName,
 }: {
   title: string;
   children: React.ReactNode;
   className?: string;
+  wrapperClassName?: string;
 }) {
   return (
-    <section className="print-block border-t border-border pt-8">
+    <section className={cn("print-block border-t border-border pt-8", wrapperClassName)}>
       <p className="text-[0.7rem] tracking-[0.28em] text-muted-foreground" style={MONO}>
         {title.toUpperCase()}
       </p>
