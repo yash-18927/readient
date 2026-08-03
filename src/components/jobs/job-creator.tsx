@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { FileText, Loader2, Sparkles, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +24,29 @@ export type JobFormValues = {
   rubric: JobDraft["rubric"];
   deadline: string | null;
 };
+
+const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
+
+function Section({
+  index,
+  title,
+  children,
+  className,
+}: {
+  index: string;
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className="border-t border-border pt-8">
+      <p className="text-[0.7rem] tracking-[0.28em] text-muted-foreground" style={MONO}>
+        {index} — {title.toUpperCase()}
+      </p>
+      <div className={cn("mt-6", className)}>{children}</div>
+    </section>
+  );
+}
 
 const linesToList = (value: string) =>
   value
