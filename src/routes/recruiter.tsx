@@ -152,12 +152,17 @@ function RecruiterDashboard() {
       navItems={[{ label: "Overview", active: true }, { label: "Job postings" }, { label: "Candidates" }]}
     >
       {!loading && !signedIn ? (
-        <div className="rounded-2xl border border-dashed border-border bg-card/60 p-12 text-center">
-          <h2 className="text-lg font-semibold">Sign in to post a role</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-border p-12 text-center">
+          <p
+            className="text-[0.7rem] tracking-[0.28em] text-muted-foreground"
+            style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}
+          >
+            SIGN IN TO POST A ROLE
+          </p>
+          <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground">
             Your job postings, share links, and candidate rankings are saved to your recruiter account.
           </p>
-          <div className="mt-6 flex justify-center gap-3">
+          <div className="mt-8 flex justify-center gap-3">
             <Button onClick={() => goToAuth("signup")}>Create account</Button>
             <Button variant="outline" onClick={() => goToAuth("signin")}>
               Sign in
@@ -184,9 +189,14 @@ function RecruiterDashboard() {
           onCancel={() => setCreating(false)}
         />
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-10">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold">Your job postings</h2>
+            <p
+              className="text-[0.7rem] tracking-[0.28em] text-muted-foreground"
+              style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}
+            >
+              01 — YOUR JOB POSTINGS
+            </p>
             <Button onClick={() => setCreating(true)}>
               <Plus className="mr-2 size-4" /> New job
             </Button>
@@ -200,6 +210,7 @@ function RecruiterDashboard() {
           />
         </div>
       )}
+
     </DashboardLayout>
   );
 }

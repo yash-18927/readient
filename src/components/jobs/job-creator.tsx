@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { FileText, Loader2, Sparkles, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +24,29 @@ export type JobFormValues = {
   rubric: JobDraft["rubric"];
   deadline: string | null;
 };
+
+const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
+
+function Section({
+  index,
+  title,
+  children,
+  className,
+}: {
+  index: string;
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className="border-t border-border pt-8">
+      <p className="text-[0.7rem] tracking-[0.28em] text-muted-foreground" style={MONO}>
+        {index} — {title.toUpperCase()}
+      </p>
+      <div className={cn("mt-6", className)}>{children}</div>
+    </section>
+  );
+}
 
 const linesToList = (value: string) =>
   value
@@ -122,12 +145,8 @@ export function JobCreator({
 
   if (!draft) {
     return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">1. Upload the source material</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      <div className="space-y-10">
+        <Section index="01" title="Upload the source material" className="space-y-4">
             <div
               role="button"
               tabIndex={0}
@@ -144,7 +163,7 @@ export function JobCreator({
                 if (e.dataTransfer.files?.length) void handleFiles(e.dataTransfer.files);
               }}
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
+                "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-12 text-center transition-colors",
                 dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
               )}
             >
@@ -179,7 +198,7 @@ export function JobCreator({
                 {files.map((file) => (
                   <li
                     key={file.name}
-                    className="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/40 px-4 py-3"
+                    className="flex items-center justify-between gap-4 rounded-lg border border-border px-4 py-3"
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <FileText className="size-5 shrink-0 text-primary" />
@@ -214,14 +233,9 @@ export function JobCreator({
                 placeholder="Paste the hiring email, recruitment sheet, or freeform description of the role."
               />
             </div>
-          </CardContent>
-        </Card>
+        </Section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">2. Guide the AI (optional)</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
+        <Section index="02" title="Guide the AI (optional)" className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Background / field</Label>
               <Select
@@ -276,8 +290,7 @@ export function JobCreator({
                 placeholder="Anything the documents miss: location, work mode, stipend, must-have tools, screening priorities…"
               />
             </div>
-          </CardContent>
-        </Card>
+          </Section>
 
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={onCancel}>
@@ -306,12 +319,9 @@ export function JobCreator({
   const weightTotal = Object.values(draft.rubric.pillar_weights).reduce((a, b) => a + b, 0);
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">3. Review the posting</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
+    <div className="space-y-10">
+
+      <Section index="03" title="Review the posting" className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="job-title">Job title</Label>
             <Input
@@ -399,14 +409,9 @@ export function JobCreator({
               onChange={(e) => patchReq({ nice_to_have_skills: commasToList(e.target.value) })}
             />
           </div>
-        </CardContent>
-      </Card>
+      </Section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">4. Scoring rubric</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <Section index="04" title="Scoring rubric" className="space-y-4">
           <p className="text-sm text-muted-foreground">
             Emphasis per pillar, tailored to this role. Total: {weightTotal}%
           </p>
@@ -464,8 +469,7 @@ export function JobCreator({
               }
             />
           </div>
-        </CardContent>
-      </Card>
+      </Section>
 
       <div className="flex justify-end gap-2">
         <Button variant="ghost" onClick={() => setDraft(null)}>
