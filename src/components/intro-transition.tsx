@@ -8,9 +8,8 @@ import { useEffect, useState } from "react";
  */
 
 const EVENT = "readient:intro-transition";
-const FLAG_KEY = "hasSeenIntroTransition";
-export const INTRO_TOTAL_MS = 1400;
-const NAVIGATE_AT_MS = 700;
+export const INTRO_TOTAL_MS = 1500;
+const NAVIGATE_AT_MS = 780;
 
 function prefersReducedMotion() {
   return (
@@ -19,33 +18,15 @@ function prefersReducedMotion() {
   );
 }
 
-function hasSeenIntro() {
-  try {
-    return window.sessionStorage.getItem(FLAG_KEY) === "true";
-  } catch {
-    return true;
-  }
-}
-
-function markIntroSeen() {
-  try {
-    window.sessionStorage.setItem(FLAG_KEY, "true");
-  } catch {
-    /* storage unavailable — treat as seen */
-  }
-}
-
 /**
- * Runs the transition once per session, then calls `navigate` at the reveal
- * point. On every later call it navigates instantly.
+ * Plays the curtain transition every time, navigating once the screen is
+ * fully covered. Reduced-motion users navigate instantly.
  */
 export function playIntroTransition(navigate: () => void) {
-  if (hasSeenIntro() || prefersReducedMotion()) {
-    markIntroSeen();
+  if (prefersReducedMotion()) {
     navigate();
     return;
   }
-  markIntroSeen();
   window.dispatchEvent(new CustomEvent(EVENT));
   window.setTimeout(navigate, NAVIGATE_AT_MS);
 }
