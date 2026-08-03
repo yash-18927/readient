@@ -34,6 +34,29 @@ export type ResumeFormValues = {
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
+const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
+
+function Section({
+  index,
+  title,
+  children,
+}: {
+  index: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-t border-border pt-8">
+      <p className="text-[0.7rem] tracking-[0.28em] text-muted-foreground" style={MONO}>
+        {index} — {title.toUpperCase()}
+      </p>
+      <div className="mt-6">{children}</div>
+    </section>
+  );
+}
+
+
+
 export function ResumeForm({
   prefill,
   extracting,
