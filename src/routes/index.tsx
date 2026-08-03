@@ -1,4 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { playIntroTransition } from "@/components/intro-transition";
 
 export const Route = createFileRoute("/")({
@@ -91,6 +92,14 @@ function ScoreRing() {
 
 function Landing() {
   const navigate = useNavigate();
+  const router = useRouter();
+
+  // Preload role selection as soon as the landing page mounts so it is ready
+  // in the DOM the instant the wipe starts.
+  useEffect(() => {
+    void router.preloadRoute({ to: "/get-started" });
+  }, [router]);
+
   return (
     <div className="landing-noir flex min-h-screen flex-col">
       <header className="mx-auto w-full max-w-6xl px-6 pt-8 sm:pt-10">
