@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
  */
 
 const EVENT = "readient:intro-transition";
-const SESSION_KEY = "hasSeenIntroTransition";
+
 
 export const INTRO_TOTAL_MS = 1400;
 const COVER_AT_MS = 700;
