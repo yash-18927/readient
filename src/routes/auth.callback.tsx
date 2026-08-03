@@ -83,20 +83,41 @@ function AuthCallback() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
-      {error ? (
-        <div className="max-w-sm text-center">
-          <h1 className="text-xl font-semibold">Sign-in failed</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{error}</p>
-          <a href="/auth" className="mt-6 inline-block text-sm font-medium text-primary underline">
-            Back to sign in
-          </a>
-        </div>
-      ) : (
-        <div className="flex items-center gap-3 text-muted-foreground">
-          <Loader2 className="size-5 animate-spin" />
-          <span className="text-sm">Signing you in…</span>
-        </div>
-      )}
+      <div className="w-full max-w-md">
+        <p
+          className="text-[0.7rem] tracking-[0.28em] text-muted-foreground"
+          style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}
+        >
+          {error ? "03 — SIGN-IN FAILED" : "03 — SIGNING IN"}
+        </p>
+        {error ? (
+          <>
+            <h1 className="mt-8 text-3xl font-medium leading-[1.25] tracking-tight sm:text-4xl">
+              Something
+              <br />
+              interrupted it.
+            </h1>
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted-foreground">{error}</p>
+            <a
+              href="/auth"
+              className="mt-10 inline-flex h-11 items-center rounded-lg border border-border px-5 text-sm text-foreground transition-colors hover:border-primary hover:text-primary"
+            >
+              Back to sign in
+            </a>
+          </>
+        ) : (
+          <>
+            <h1 className="mt-8 text-3xl font-medium leading-[1.25] tracking-tight sm:text-4xl">
+              One moment.
+            </h1>
+            <div className="mt-6 flex items-center gap-3 text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" />
+              <span className="text-sm leading-relaxed">Completing your sign-in…</span>
+            </div>
+          </>
+        )}
+      </div>
     </div>
+
   );
 }

@@ -40,10 +40,10 @@ export function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card no-print">
+      <header className="border-b border-border bg-background no-print">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex items-center gap-8">
-            <Link to="/" className="font-display text-base font-bold">
+            <Link to="/" className="text-sm font-medium tracking-tight text-foreground">
               Readient
             </Link>
             <nav className="hidden items-center gap-6 sm:flex">
@@ -52,8 +52,8 @@ export function DashboardLayout({
                   key={item.label}
                   className={
                     item.active
-                      ? "text-sm font-medium text-foreground"
-                      : "text-sm text-muted-foreground"
+                      ? "border-b border-primary pb-0.5 text-sm text-foreground"
+                      : "border-b border-transparent pb-0.5 text-sm text-muted-foreground"
                   }
                 >
                   {item.label}
@@ -65,21 +65,26 @@ export function DashboardLayout({
             <ThemeToggle />
             {signedIn ? (
               <>
-                <span className="hidden text-sm text-muted-foreground sm:inline">
+                <span className="hidden text-xs text-muted-foreground sm:inline">
                   {profile?.full_name || "Account"} · {profile?.role}
                 </span>
-                <Button variant="outline" size="sm" onClick={signOut}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={signOut}
+                  className="rounded-lg text-muted-foreground hover:text-foreground"
+                >
                   <LogOut className="mr-2 size-4" /> Sign out
                 </Button>
               </>
             ) : (
               <>
-                <Button asChild variant="ghost" size="sm">
+                <Button asChild variant="ghost" size="sm" className="rounded-lg">
                   <Link to="/auth" search={{ role, mode: "signin" }}>
                     Sign in
                   </Link>
                 </Button>
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="rounded-lg">
                   <Link to="/auth" search={{ role, mode: "signup" }}>
                     Create account
                   </Link>
@@ -91,8 +96,16 @@ export function DashboardLayout({
       </header>
 
       <main className="mx-auto max-w-6xl px-6 py-12">
-        <h1 className="text-3xl font-bold">{title}</h1>
-        <p className="mt-2 text-muted-foreground">{subtitle}</p>
+        <p
+          className="text-[0.7rem] tracking-[0.28em] text-muted-foreground"
+          style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}
+        >
+          {(role ?? profile?.role ?? "").toString().toUpperCase() || "DASHBOARD"}
+        </p>
+        <h1 className="mt-6 text-3xl font-medium leading-[1.25] tracking-tight sm:text-4xl">
+          {title}
+        </h1>
+        <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
         <div className="mt-10">{children}</div>
       </main>
     </div>
@@ -101,9 +114,10 @@ export function DashboardLayout({
 
 export function PlaceholderPanel({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-border bg-card/60 p-12 text-center">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">{body}</p>
+    <div className="rounded-lg border border-dashed border-border bg-transparent p-12">
+      <h2 className="text-base font-medium tracking-tight text-foreground">{title}</h2>
+      <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">{body}</p>
     </div>
   );
 }
+
