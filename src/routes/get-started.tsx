@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { dashboardPath, setPendingRole, type AppRole } from "@/lib/auth";
+import { introRevealDelay } from "@/components/intro-transition";
 
 export const Route = createFileRoute("/get-started")({
   head: () => ({
