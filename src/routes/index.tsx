@@ -115,12 +115,13 @@ function Landing() {
               are to being hired for the role you actually want.
             </p>
 
-            <Link
-              to="/student"
+            <button
+              type="button"
+              onClick={() => playIntroTransition(() => navigate({ to: "/get-started" }))}
               className="mt-12 inline-block border-b border-primary pb-1 text-sm text-foreground transition-colors hover:text-primary"
             >
               Run your first scan →
-            </Link>
+            </button>
           </div>
 
           <div className="flex justify-center lg:justify-end">
