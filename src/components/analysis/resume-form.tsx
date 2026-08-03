@@ -258,8 +258,9 @@ export function ResumeForm({
               placeholder="Paste a job posting to compare your resume against that specific role."
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </Section>
+
 
       {evidenceKeys.length > 0 && (
         <Section index="03" title="Evidence of competence (optional)">
