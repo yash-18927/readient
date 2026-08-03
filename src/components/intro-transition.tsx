@@ -8,9 +8,8 @@ import { useEffect, useState } from "react";
  */
 
 const EVENT = "readient:intro-transition";
-const FLAG_KEY = "hasSeenIntroTransition";
-export const INTRO_TOTAL_MS = 1400;
-const NAVIGATE_AT_MS = 700;
+export const INTRO_TOTAL_MS = 1500;
+const NAVIGATE_AT_MS = 780;
 
 function prefersReducedMotion() {
   return (
@@ -19,33 +18,15 @@ function prefersReducedMotion() {
   );
 }
 
-function hasSeenIntro() {
-  try {
-    return window.sessionStorage.getItem(FLAG_KEY) === "true";
-  } catch {
-    return true;
-  }
-}
-
-function markIntroSeen() {
-  try {
-    window.sessionStorage.setItem(FLAG_KEY, "true");
-  } catch {
-    /* storage unavailable — treat as seen */
-  }
-}
-
 /**
- * Runs the transition once per session, then calls `navigate` at the reveal
- * point. On every later call it navigates instantly.
+ * Plays the curtain transition every time, navigating once the screen is
+ * fully covered. Reduced-motion users navigate instantly.
  */
 export function playIntroTransition(navigate: () => void) {
-  if (hasSeenIntro() || prefersReducedMotion()) {
-    markIntroSeen();
+  if (prefersReducedMotion()) {
     navigate();
     return;
   }
-  markIntroSeen();
   window.dispatchEvent(new CustomEvent(EVENT));
   window.setTimeout(navigate, NAVIGATE_AT_MS);
 }
@@ -69,27 +50,31 @@ function PaperPlane() {
 }
 
 export function IntroTransition() {
+  const [runId, setRunId] = useState(0);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
-    const onPlay = () => setPlaying(true);
+    const onPlay = () => {
+      setRunId((n) => n + 1);
+      setPlaying(true);
+    };
     window.addEventListener(EVENT, onPlay);
     return () => window.removeEventListener(EVENT, onPlay);
   }, []);
 
   useEffect(() => {
     if (!playing) return;
-    const t = window.setTimeout(() => setPlaying(false), INTRO_TOTAL_MS + 60);
+    const t = window.setTimeout(() => setPlaying(false), INTRO_TOTAL_MS + 80);
     return () => window.clearTimeout(t);
-  }, [playing]);
+  }, [playing, runId]);
 
   if (!playing) return null;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden" aria-hidden="true">
-      <div className="intro-curtain absolute inset-y-0 left-0 w-[62vw]">
+      <div key={runId} className="intro-curtain absolute inset-y-0 left-0 w-screen">
         <div
-          className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 rotate-[22deg]"
+          className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 rotate-[18deg]"
           style={{ color: "#d85a30" }}
         >
           <PaperPlane />
