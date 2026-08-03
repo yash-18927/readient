@@ -189,8 +189,9 @@ export function ResumeForm({
               e.target.value = "";
             }}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </Section>
+
 
       <Section index="02" title="Target role">
         <div className="grid gap-4 sm:grid-cols-2">
