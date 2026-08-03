@@ -3,7 +3,7 @@ export function Logo({ className = "" }: { className?: string }) {
     <span className={`flex items-center gap-2 ${className}`}>
       <span
         aria-hidden
-        className="flex size-7 items-center justify-center rounded-lg bg-accent-gradient text-[0.7rem] font-bold text-primary-foreground shadow-soft"
+        className="flex size-7 items-center justify-center rounded-lg bg-accent-gradient text-[0.7rem] font-bold text-primary-foreground"
       >
         R
       </span>
