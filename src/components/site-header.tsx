@@ -112,7 +112,7 @@ export function SiteHeader() {
             <SheetTrigger asChild>
               <Button
                 size="icon"
-                className="size-10 rounded-xl shadow-soft transition-transform duration-200 hover:scale-[1.03]"
+                className="size-10 rounded-lg transition-transform duration-200 hover:scale-[1.03]"
                 aria-label="Open navigation menu"
               >
                 <Menu className="size-5" />
@@ -131,7 +131,7 @@ export function SiteHeader() {
                     to={item.to}
                     hash={"hash" in item ? item.hash : undefined}
                     onClick={() => setOpen(false)}
-                    className="group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-all duration-200 hover:translate-x-0.5 hover:bg-secondary"
+                    className="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-foreground transition-all duration-200 hover:translate-x-0.5 hover:bg-secondary"
                   >
                     <span className="flex size-9 items-center justify-center rounded-xl bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                       <item.icon className="size-4" />
@@ -147,7 +147,7 @@ export function SiteHeader() {
                     key={item.label}
                     to={item.to}
                     onClick={() => setOpen(false)}
-                    className="group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-muted-foreground transition-all duration-200 hover:translate-x-0.5 hover:bg-secondary hover:text-foreground"
+                    className="group flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-muted-foreground transition-all duration-200 hover:translate-x-0.5 hover:bg-secondary hover:text-foreground"
                   >
                     <item.icon className="size-4" />
                     {item.label}

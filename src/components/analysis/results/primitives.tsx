@@ -17,12 +17,12 @@ export function ScoreBar({
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between gap-3 text-sm">
         <span className="text-muted-foreground">{label}</span>
-        <span className="font-semibold tabular-nums">
+        <span className="font-medium tabular-nums">
           {Math.round(value)}
           {suffix ?? (max === 100 ? "" : `/${max}`)}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
         <div className={cn("h-full rounded-full", TONE_BAR[scoreTone(pct)])} style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -31,15 +31,38 @@ export function ScoreBar({
 
 export function Chip({ tone, children }: { tone: "green" | "red" | "yellow" | "neutral"; children: React.ReactNode }) {
   const styles = {
-    green: "bg-success/12 text-success border-success/30",
-    red: "bg-destructive/10 text-destructive border-destructive/30",
-    yellow: "bg-warning/15 text-warning-foreground border-warning/40",
-    neutral: "bg-muted text-muted-foreground border-border",
+    green: "text-success border-success/40",
+    red: "text-destructive border-destructive/40",
+    yellow: "text-warning-foreground border-warning/50",
+    neutral: "text-muted-foreground border-border",
   }[tone];
   return (
-    <span className={cn("inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium", styles)}>
+    <span className={cn("inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium", styles)}>
       {children}
     </span>
+  );
+}
+
+export const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
+
+export function Panel({
+  title,
+  children,
+  className,
+  wrapperClassName,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+  wrapperClassName?: string;
+}) {
+  return (
+    <section className={cn("print-block border-t border-border pt-8", wrapperClassName)}>
+      <p className="text-[0.7rem] tracking-[0.28em] text-muted-foreground" style={MONO}>
+        {title.toUpperCase()}
+      </p>
+      <div className={cn("mt-6", className)}>{children}</div>
+    </section>
   );
 }
 
@@ -52,8 +75,8 @@ export function Gauge({ value }: { value: number }) {
       className="relative grid size-36 place-items-center rounded-full"
       style={{ background: `conic-gradient(${color} ${pct * 3.6}deg, var(--muted) 0deg)` }}
     >
-      <div className="grid size-28 place-items-center rounded-full bg-card">
-        <span className="text-3xl font-bold tabular-nums">{Math.round(pct)}</span>
+      <div className="grid size-28 place-items-center rounded-full bg-background">
+        <span className="text-3xl font-light tabular-nums">{Math.round(pct)}</span>
         <span className="text-xs text-muted-foreground">/ 100</span>
       </div>
     </div>

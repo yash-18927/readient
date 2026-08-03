@@ -1,7 +1,7 @@
 import { Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { AnalysisRecord } from "@/lib/analysis.functions";
+import { MONO, Panel } from "./primitives";
 import { AtsAudit } from "./ats-audit";
 import { PillarBreakdown, ScoreOverview } from "./score-overview";
 import { SkillsPanel } from "./skills-panel";
@@ -23,12 +23,12 @@ export function ResultsDashboard({
   const result = record.result;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <div className="flex flex-wrap items-center justify-between gap-3 no-print">
         <div>
-          <h2 className="text-xl font-semibold">{record.target_role}</h2>
-          <p className="text-sm text-muted-foreground">
-            {record.field} · analysed {new Date(record.created_at).toLocaleString()}
+          <h2 className="font-display text-2xl font-light tracking-tight">{record.target_role}</h2>
+          <p className="mt-1 text-[0.7rem] tracking-[0.18em] text-muted-foreground" style={MONO}>
+            {record.field.toUpperCase()} · ANALYSED {new Date(record.created_at).toLocaleString()}
           </p>
         </div>
         <div className="flex gap-2">
@@ -43,24 +43,23 @@ export function ResultsDashboard({
 
       <ScoreOverview result={result} />
 
-      <Card className="print-block">
-        <CardHeader>
-          <CardTitle className="text-base">Executive summary</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 text-sm leading-relaxed">
-          <p>{result.executive_summary}</p>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-xl bg-muted/40 p-4">
-              <p className="mb-1 font-medium">Credential audit</p>
-              <p className="text-muted-foreground">{result.credential_audit}</p>
-            </div>
-            <div className="rounded-xl bg-muted/40 p-4">
-              <p className="mb-1 font-medium">Role fit</p>
-              <p className="text-muted-foreground">{result.role_fit_summary}</p>
-            </div>
+      <Panel title="Executive summary" className="space-y-6 text-sm leading-relaxed">
+        <p className="max-w-3xl">{result.executive_summary}</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-lg border border-border p-5">
+            <p className="mb-2 text-[0.65rem] tracking-[0.22em] text-muted-foreground" style={MONO}>
+              CREDENTIAL AUDIT
+            </p>
+            <p className="text-muted-foreground">{result.credential_audit}</p>
           </div>
-        </CardContent>
-      </Card>
+          <div className="rounded-lg border border-border p-5">
+            <p className="mb-2 text-[0.65rem] tracking-[0.22em] text-muted-foreground" style={MONO}>
+              ROLE FIT
+            </p>
+            <p className="text-muted-foreground">{result.role_fit_summary}</p>
+          </div>
+        </div>
+      </Panel>
 
       <SkillsPanel result={result} />
       <AtsAudit result={result} />
@@ -71,9 +70,9 @@ export function ResultsDashboard({
       <InterviewQuestions result={result} />
       <ProjectSuggestions result={result} />
 
-      <Card className="print-block border-primary/30 bg-primary/5">
-        <CardContent className="py-6 text-sm leading-relaxed">{result.encouragement}</CardContent>
-      </Card>
+      <div className="print-block border-l-2 border-primary py-2 pl-5 text-sm leading-relaxed text-muted-foreground">
+        {result.encouragement}
+      </div>
     </div>
   );
 }

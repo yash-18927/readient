@@ -74,29 +74,31 @@ function Consent() {
 
   return (
     <main className="mx-auto w-full max-w-md px-6 py-24">
-      <div className="rounded-2xl border border-border bg-card p-8 shadow-soft">
-        <h1 className="text-2xl font-bold">Connect {clientName}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          This lets {clientName} read your Readient profile and resume analyses as you.
+      <p
+        className="text-[0.7rem] tracking-[0.28em] text-muted-foreground"
+        style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}
+      >
+        AUTHORIZE ACCESS
+      </p>
+      <h1 className="mt-6 text-2xl font-light tracking-tight">Connect {clientName}</h1>
+      <p className="mt-3 text-sm text-muted-foreground">
+        This lets {clientName} read your Readient profile and resume analyses as you.
+      </p>
+      {error && (
+        <p
+          role="alert"
+          className="mt-6 border-l-2 border-primary pl-3 text-sm text-muted-foreground"
+        >
+          {error}
         </p>
-        {error && (
-          <p role="alert" className="mt-4 text-sm text-destructive">
-            {error}
-          </p>
-        )}
-        <div className="mt-8 flex gap-3">
-          <Button className="flex-1" disabled={busy} onClick={() => decide(true)}>
-            Approve
-          </Button>
-          <Button
-            className="flex-1"
-            variant="outline"
-            disabled={busy}
-            onClick={() => decide(false)}
-          >
-            Deny
-          </Button>
-        </div>
+      )}
+      <div className="mt-10 flex gap-3">
+        <Button className="flex-1" disabled={busy} onClick={() => decide(true)}>
+          Approve
+        </Button>
+        <Button className="flex-1" variant="outline" disabled={busy} onClick={() => decide(false)}>
+          Deny
+        </Button>
       </div>
     </main>
   );

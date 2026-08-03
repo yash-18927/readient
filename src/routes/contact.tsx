@@ -39,7 +39,7 @@ function Contact() {
               href={channel.href}
               target={channel.href.startsWith("http") ? "_blank" : undefined}
               rel="noreferrer noopener"
-              className="surface-card flex flex-col gap-2 p-5"
+              className="flex flex-col gap-2 rounded-lg border border-border p-5 transition-colors hover:border-foreground/30"
             >
               <channel.icon className="size-4 text-primary" />
               <span className="text-sm font-semibold text-foreground">{channel.label}</span>

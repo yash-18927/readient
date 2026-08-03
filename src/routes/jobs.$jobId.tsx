@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { Chip } from "@/components/analysis/results/primitives";
+
 import { JobAnalytics } from "@/components/jobs/job-analytics";
 import { Leaderboard } from "@/components/jobs/leaderboard";
 import { CandidateReport } from "@/components/jobs/candidate-report";
@@ -64,7 +64,7 @@ function JobDetailPage() {
       subtitle={job ? `${job.company || "No company"} · ${submissions.length} applicant${submissions.length === 1 ? "" : "s"}` : "Loading…"}
       navItems={[{ label: "Overview" }, { label: "Job postings" }, { label: "Candidates", active: true }]}
     >
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Button variant="ghost" asChild>
             <Link to="/recruiter">
@@ -72,8 +72,17 @@ function JobDetailPage() {
             </Link>
           </Button>
           {job && (
-            <div className="flex items-center gap-3">
-              <Chip tone={accepting ? "green" : "neutral"}>{accepting ? "Open" : "Closed"}</Chip>
+            <div className="flex items-center gap-4">
+              <span
+                className={
+                  accepting
+                    ? "text-[0.65rem] tracking-[0.22em] text-primary"
+                    : "text-[0.65rem] tracking-[0.22em] text-muted-foreground"
+                }
+                style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}
+              >
+                {accepting ? "OPEN" : "CLOSED"}
+              </span>
               <Button
                 variant="outline"
                 size="sm"
@@ -93,16 +102,16 @@ function JobDetailPage() {
         </div>
 
         {detail.isError && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-muted-foreground">
             We could not load this job posting. It may have been deleted.
           </p>
         )}
 
         {open ? (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-lg font-medium">
                   {open.candidate_name || `Candidate ${open.id.slice(0, 6)}`}
                 </h2>
                 <p className="text-sm text-muted-foreground">
