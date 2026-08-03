@@ -50,27 +50,31 @@ function PaperPlane() {
 }
 
 export function IntroTransition() {
+  const [runId, setRunId] = useState(0);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
-    const onPlay = () => setPlaying(true);
+    const onPlay = () => {
+      setRunId((n) => n + 1);
+      setPlaying(true);
+    };
     window.addEventListener(EVENT, onPlay);
     return () => window.removeEventListener(EVENT, onPlay);
   }, []);
 
   useEffect(() => {
     if (!playing) return;
-    const t = window.setTimeout(() => setPlaying(false), INTRO_TOTAL_MS + 60);
+    const t = window.setTimeout(() => setPlaying(false), INTRO_TOTAL_MS + 80);
     return () => window.clearTimeout(t);
-  }, [playing]);
+  }, [playing, runId]);
 
   if (!playing) return null;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden" aria-hidden="true">
-      <div className="intro-curtain absolute inset-y-0 left-0 w-[62vw]">
+      <div key={runId} className="intro-curtain absolute inset-y-0 left-0 w-screen">
         <div
-          className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 rotate-[22deg]"
+          className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 rotate-[18deg]"
           style={{ color: "#d85a30" }}
         >
           <PaperPlane />
