@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { cn } from "@/lib/utils";
 import {
   EVIDENCE_LABELS,
@@ -33,6 +33,29 @@ export type ResumeFormValues = {
 };
 
 const MAX_BYTES = 5 * 1024 * 1024;
+
+const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
+
+function Section({
+  index,
+  title,
+  children,
+}: {
+  index: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-t border-border pt-8">
+      <p className="text-[0.7rem] tracking-[0.28em] text-muted-foreground" style={MONO}>
+        {index} — {title.toUpperCase()}
+      </p>
+      <div className="mt-6">{children}</div>
+    </section>
+  );
+}
+
+
 
 export function ResumeForm({
   prefill,
@@ -102,7 +125,7 @@ export function ResumeForm({
 
   return (
     <form
-      className="space-y-6"
+      className="space-y-10"
       onSubmit={(event) => {
         event.preventDefault();
         if (!canSubmit) return;
@@ -118,13 +141,11 @@ export function ResumeForm({
         });
       }}
     >
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">1. Your resume</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Section index="01" title="Your resume">
+        <div>
+
           {resumeText ? (
-            <div className="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/40 px-4 py-3">
+            <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-transparent px-4 py-3">
               <div className="flex min-w-0 items-center gap-3">
                 <FileText className="size-5 shrink-0 text-primary" />
                 <div className="min-w-0">
@@ -165,7 +186,7 @@ export function ResumeForm({
                 if (file) void handleFile(file);
               }}
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
+                "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-14 text-center transition-colors",
                 dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
               )}
             >
@@ -191,14 +212,13 @@ export function ResumeForm({
               e.target.value = "";
             }}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </Section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">2. Target role</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
+
+      <Section index="02" title="Target role">
+        <div className="grid gap-4 sm:grid-cols-2">
+
           <div className="space-y-2">
             <Label>Field of study</Label>
             <Select
@@ -260,15 +280,13 @@ export function ResumeForm({
               placeholder="Paste a job posting to compare your resume against that specific role."
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </Section>
+
 
       {evidenceKeys.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">3. Evidence of competence (optional)</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
+        <Section index="03" title="Evidence of competence (optional)">
+          <div className="grid gap-4 sm:grid-cols-2">
             {evidenceKeys.map((key) => {
               const meta = EVIDENCE_LABELS[key];
               return (
@@ -293,12 +311,13 @@ export function ResumeForm({
                 </div>
               );
             })}
-          </CardContent>
-        </Card>
+          </div>
+        </Section>
+
       )}
 
       <div className="flex justify-end">
-        <Button type="submit" size="lg" disabled={!canSubmit}>
+        <Button type="submit" size="lg" className="rounded-lg" disabled={!canSubmit}>
           {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
           {submitting ? "Analysing your readiness…" : "Analyse my readiness"}
         </Button>
