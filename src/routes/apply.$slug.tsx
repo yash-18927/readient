@@ -5,11 +5,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { FileText, Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Chip } from "@/components/analysis/results/primitives";
 import { CandidateReport } from "@/components/jobs/candidate-report";
 import type { AnalysisResult } from "@/lib/analysis/schema";
 import {
