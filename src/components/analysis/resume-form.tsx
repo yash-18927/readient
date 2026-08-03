@@ -118,11 +118,9 @@ export function ResumeForm({
         });
       }}
     >
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">1. Your resume</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Section index="01" title="Your resume">
+        <div>
+
           {resumeText ? (
             <div className="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/40 px-4 py-3">
               <div className="flex min-w-0 items-center gap-3">
