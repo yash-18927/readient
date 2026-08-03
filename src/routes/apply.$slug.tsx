@@ -37,6 +37,27 @@ export const Route = createFileRoute("/apply/$slug")({
   component: ApplyPage,
 });
 
+const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
+
+function Section({
+  index,
+  title,
+  children,
+}: {
+  index: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-t border-border pt-8">
+      <p className="text-[0.7rem] tracking-[0.28em] text-muted-foreground" style={MONO}>
+        {index} — {title.toUpperCase()}
+      </p>
+      <div className="mt-6">{children}</div>
+    </section>
+  );
+}
+
 function toBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
