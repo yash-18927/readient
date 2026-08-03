@@ -163,7 +163,7 @@ export function JobCreator({
                 if (e.dataTransfer.files?.length) void handleFiles(e.dataTransfer.files);
               }}
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-12 text-center transition-colors",
+                "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-12 text-center transition-colors",
                 dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
               )}
             >
@@ -198,7 +198,7 @@ export function JobCreator({
                 {files.map((file) => (
                   <li
                     key={file.name}
-                    className="flex items-center justify-between gap-4 rounded-xl border border-border bg-muted/40 px-4 py-3"
+                    className="flex items-center justify-between gap-4 rounded-lg border border-border px-4 py-3"
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <FileText className="size-5 shrink-0 text-primary" />
