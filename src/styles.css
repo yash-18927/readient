@@ -357,3 +357,42 @@ html {
 .intro-reveal {
   animation: readient-intro-reveal 350ms ease-out both;
 }
+
+/* Landing hero constellation: staggered build-in, then subtle idle motion */
+@keyframes readient-constellation-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes readient-constellation-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2.5px, 0); }
+}
+
+@keyframes readient-constellation-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.constellation-in {
+  animation: readient-constellation-in 500ms ease-out both;
+}
+
+.constellation-drift {
+  animation:
+    readient-constellation-in 500ms ease-out both,
+    readient-constellation-drift 7s ease-in-out infinite;
+}
+
+.constellation-pulse {
+  animation:
+    readient-constellation-in 500ms ease-out both,
+    readient-constellation-pulse 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .constellation-drift,
+  .constellation-pulse {
+    animation: readient-constellation-in 500ms ease-out both;
+  }
+}

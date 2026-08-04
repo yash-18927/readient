@@ -2,7 +2,9 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { useEffect } from "react";
 import { playIntroTransition } from "@/components/intro-transition";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { InteractiveScoreRing } from "@/components/score-ring";
+import { HeroConstellation } from "@/components/hero-constellation";
+import { CyclingWord } from "@/components/cycling-word";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -26,21 +28,8 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const SCORE = 76;
 
-const DEMO_BREAKDOWN = [
-  { label: "ATS Compatibility", value: 82 },
-  { label: "Resume Quality", value: 74 },
-  { label: "Skill Match", value: 68 },
-  { label: "Projects", value: 79 },
-  { label: "Interview Readiness", value: 63 },
-  { label: "GitHub Profile", value: 88 },
-  { label: "Coding Profile", value: 71 },
-];
 
-function ScoreRing() {
-  return <InteractiveScoreRing score={SCORE} breakdown={DEMO_BREAKDOWN} />;
-}
 
 function Landing() {
   const navigate = useNavigate();
@@ -67,11 +56,9 @@ function Landing() {
             </p>
 
             <h1 className="mt-10 text-4xl font-medium leading-[1.25] tracking-tight sm:text-5xl sm:leading-[1.22]">
-              Readiness isn't
+              Are you
               <br />
-              a guess.
-              <br />
-              It's a number.
+              <CyclingWord />
             </h1>
 
             <p className="mt-8 max-w-md text-base leading-relaxed text-muted-foreground">
@@ -89,8 +76,9 @@ function Landing() {
           </div>
 
           <div className="flex justify-center lg:justify-end">
-            <ScoreRing />
+            <HeroConstellation />
           </div>
+
         </div>
       </main>
 
