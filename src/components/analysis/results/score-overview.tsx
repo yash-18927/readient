@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { PILLAR_META, SUB_SCORE_META, type AnalysisResult } from "@/lib/analysis/schema";
 import { MONO, Panel, ScoreBar } from "./primitives";
+import { InteractiveScoreRing } from "@/components/score-ring";
 
 export function ScoreOverview({ result }: { result: AnalysisResult }) {
   const chartData = [
@@ -25,9 +26,15 @@ export function ScoreOverview({ result }: { result: AnalysisResult }) {
     <div className="grid gap-8 lg:grid-cols-3">
       <Panel title="Overall readiness" wrapperClassName="lg:col-span-1">
         <div className="flex flex-col items-center gap-3 text-center">
-          <span className="font-display text-6xl font-light tabular-nums">
-            {Math.round(result.overall_score)}
-          </span>
+          <InteractiveScoreRing
+            score={result.overall_score}
+            size={220}
+            className="max-w-[16rem]"
+            breakdown={SUB_SCORE_META.map((meta) => ({
+              label: meta.label,
+              value: result.sub_scores[meta.key],
+            }))}
+          />
           <span className="text-sm text-muted-foreground">out of 100</span>
           <span className="text-[0.65rem] tracking-[0.22em] text-primary" style={MONO}>
             {result.readiness_level.toUpperCase()}
