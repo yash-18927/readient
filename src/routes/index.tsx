@@ -27,68 +27,18 @@ export const Route = createFileRoute("/")({
 
 const SCORE = 76;
 
-function ScoreRing() {
-  const size = 420;
-  const stroke = 10;
-  const radius = (size - stroke) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const end = circumference * (1 - SCORE / 100);
+const DEMO_BREAKDOWN = [
+  { label: "ATS Compatibility", value: 82 },
+  { label: "Resume Quality", value: 74 },
+  { label: "Skill Match", value: 68 },
+  { label: "Projects", value: 79 },
+  { label: "Interview Readiness", value: 63 },
+  { label: "GitHub Profile", value: 88 },
+  { label: "Coding Profile", value: 71 },
+];
 
-  return (
-    <svg
-      viewBox={`0 0 ${size} ${size}`}
-      className="h-auto w-full max-w-[26rem]"
-      role="img"
-      aria-label={`Placement readiness score ${SCORE} out of 100`}
-    >
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke="var(--ring-track)"
-        strokeWidth={stroke}
-      />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke="var(--primary)"
-        strokeWidth={stroke}
-        strokeLinecap="round"
-        strokeDasharray={circumference}
-        className="animate-ring-fill"
-        style={
-          {
-            transform: "rotate(-90deg)",
-            transformOrigin: "50% 50%",
-            "--ring-start": `${circumference}px`,
-            "--ring-end": `${end}px`,
-            strokeDashoffset: `${end}px`,
-          } as React.CSSProperties
-        }
-      />
-      <text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        className="fill-foreground text-[3.4rem] font-normal tracking-tight"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        {SCORE}
-      </text>
-      <text
-        x="50%"
-        y="59%"
-        textAnchor="middle"
-        className="fill-muted-foreground text-[0.95rem] tracking-[0.18em]"
-        style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace" }}
-      >
-        / 100
-      </text>
-    </svg>
-  );
+function ScoreRing() {
+  return <InteractiveScoreRing score={SCORE} breakdown={DEMO_BREAKDOWN} />;
 }
 
 function Landing() {
