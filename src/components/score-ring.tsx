@@ -163,9 +163,17 @@ export function InteractiveScoreRing({
         tabIndex={0}
         aria-expanded={open}
         aria-label={`Readiness score ${Math.round(score)} out of 100. Activate to see the breakdown.`}
-        onMouseEnter={openWithCue}
-        onMouseLeave={() => setOpen(false)}
-        onClick={toggle}
+        onPointerEnter={(e) => {
+          if (e.pointerType === "mouse") openWithCue();
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setOpen(false);
+        }}
+        onClick={(e) => {
+          // Hover already handles mouse; only tap/pen toggles.
+          if ((e.nativeEvent as PointerEvent).pointerType === "mouse") return;
+          toggle();
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
