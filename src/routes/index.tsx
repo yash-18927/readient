@@ -2,7 +2,9 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { useEffect } from "react";
 import { playIntroTransition } from "@/components/intro-transition";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { InteractiveScoreRing } from "@/components/score-ring";
+import { HeroConstellation } from "@/components/hero-constellation";
+import { CyclingWord } from "@/components/cycling-word";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
