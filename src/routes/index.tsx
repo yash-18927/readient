@@ -56,11 +56,9 @@ function Landing() {
             </p>
 
             <h1 className="mt-10 text-4xl font-medium leading-[1.25] tracking-tight sm:text-5xl sm:leading-[1.22]">
-              Readiness isn't
+              Are you
               <br />
-              a guess.
-              <br />
-              It's a number.
+              <CyclingWord />
             </h1>
 
             <p className="mt-8 max-w-md text-base leading-relaxed text-muted-foreground">
@@ -78,8 +76,9 @@ function Landing() {
           </div>
 
           <div className="flex justify-center lg:justify-end">
-            <ScoreRing />
+            <HeroConstellation />
           </div>
+
         </div>
       </main>
 
