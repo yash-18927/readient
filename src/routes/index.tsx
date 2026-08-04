@@ -28,21 +28,8 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const SCORE = 76;
 
-const DEMO_BREAKDOWN = [
-  { label: "ATS Compatibility", value: 82 },
-  { label: "Resume Quality", value: 74 },
-  { label: "Skill Match", value: 68 },
-  { label: "Projects", value: 79 },
-  { label: "Interview Readiness", value: 63 },
-  { label: "GitHub Profile", value: 88 },
-  { label: "Coding Profile", value: 71 },
-];
 
-function ScoreRing() {
-  return <InteractiveScoreRing score={SCORE} breakdown={DEMO_BREAKDOWN} />;
-}
 
 function Landing() {
   const navigate = useNavigate();
