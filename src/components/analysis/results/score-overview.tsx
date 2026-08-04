@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { PILLAR_META, SUB_SCORE_META, type AnalysisResult } from "@/lib/analysis/schema";
 import { MONO, Panel, ScoreBar } from "./primitives";
+import { InteractiveScoreRing } from "@/components/score-ring";
 
 export function ScoreOverview({ result }: { result: AnalysisResult }) {
   const chartData = [
