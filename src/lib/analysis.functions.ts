@@ -54,7 +54,8 @@ export const analyzeResume = createServerFn({ method: "POST" })
     );
     const { runAnalysisModel, AnalysisError } = await import("@/lib/analysis/ai.server");
     const { analysisResultSchema } = await import("@/lib/analysis/schema");
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { createSupabaseAdminClient } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = createSupabaseAdminClient();
 
     // Cheap guard so invalid uploads never burn AI credits.
     try {

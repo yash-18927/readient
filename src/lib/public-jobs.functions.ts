@@ -94,7 +94,8 @@ export const submitApplication = createServerFn({ method: "POST" })
     // read it here through the service-role client after the slug has already
     // resolved to an open job. The rubric is used only to build the prompt and
     // is never returned to the candidate.
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { createSupabaseAdminClient } = await import("@/integrations/supabase/client.server");
+    const supabaseAdmin = createSupabaseAdminClient();
     const { data: rubricRow } = await supabaseAdmin
       .from("jobs")
       .select("rubric")
