@@ -36,8 +36,6 @@ export function LinkedInUpload({
   onClear: () => void;
 }) {
   const parseFn = useServerFn(parseLinkedInExport);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState("");
   const [meta, setMeta] = useState<LinkedInImport | null>(null);
   const [error, setError] = useState("");
