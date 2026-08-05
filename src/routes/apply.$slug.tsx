@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CandidateReport } from "@/components/jobs/candidate-report";
+import { LinkedInUpload } from "@/components/linkedin-upload";
 import type { AnalysisResult } from "@/lib/analysis/schema";
 import {
   extractPublicResume,
@@ -80,6 +81,7 @@ function ApplyPage() {
   const [email, setEmail] = useState("");
   const [github, setGithub] = useState("");
   const [portfolio, setPortfolio] = useState("");
+  const [linkedinSummary, setLinkedinSummary] = useState("");
   const [resumeText, setResumeText] = useState("");
   const [fileName, setFileName] = useState<string | undefined>();
   const [outcome, setOutcome] = useState<{ score: number; result: AnalysisResult } | null>(null);
@@ -110,6 +112,7 @@ function ApplyPage() {
             ...(github.trim() ? { github: github.trim() } : {}),
             ...(portfolio.trim() ? { portfolio: portfolio.trim() } : {}),
           },
+          ...(linkedinSummary ? { linkedinSummary } : {}),
           resumeText,
           resumeFileName: fileName,
         },
@@ -224,7 +227,7 @@ function ApplyPage() {
                   <Input id="cand-github" value={github} onChange={(e) => setGithub(e.target.value)} maxLength={500} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cand-portfolio">Portfolio / LinkedIn (optional)</Label>
+                  <Label htmlFor="cand-portfolio">Portfolio URL (optional)</Label>
                   <Input
                     id="cand-portfolio"
                     value={portfolio}
@@ -232,6 +235,15 @@ function ApplyPage() {
                     maxLength={500}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>LinkedIn data export (optional)</Label>
+                <LinkedInUpload
+                  value={linkedinSummary}
+                  onParsed={(data) => setLinkedinSummary(data.summary)}
+                  onClear={() => setLinkedinSummary("")}
+                />
               </div>
 
               <div className="space-y-2">

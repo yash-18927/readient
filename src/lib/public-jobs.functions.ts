@@ -61,6 +61,7 @@ const submissionInput = z.object({
   candidateName: z.string().trim().max(120).optional(),
   candidateEmail: z.string().trim().email().max(255).optional().or(z.literal("")),
   links: z.record(z.string(), z.string().trim().max(500)).default({}),
+  linkedinSummary: z.string().trim().max(12000).optional(),
   resumeText: z.string().min(100).max(60000),
   resumeFileName: z.string().max(255).optional(),
 });
@@ -89,6 +90,11 @@ export const submitApplication = createServerFn({ method: "POST" })
     const requirements = jobRequirementsSchema.parse(job.structured_requirements ?? {});
     const rubric = jobRubricSchema.parse(job.rubric ?? { pillar_weights: {} });
 
+    const links = {
+      ...data.links,
+      ...(data.linkedinSummary ? { linkedin_export: data.linkedinSummary } : {}),
+    };
+
     let result: AnalysisResult;
     try {
       const scored = await scoreCandidate({
@@ -97,7 +103,7 @@ export const submitApplication = createServerFn({ method: "POST" })
         requirements,
         rubric,
         resumeText: data.resumeText,
-        links: data.links,
+        links,
       });
       result = scored.result;
     } catch (error) {
@@ -111,7 +117,7 @@ export const submitApplication = createServerFn({ method: "POST" })
       job_id: job.id,
       candidate_name: data.candidateName?.trim() || null,
       candidate_email: data.candidateEmail?.trim() || null,
-      links: data.links,
+      links,
       resume_text: data.resumeText,
       resume_file_name: data.resumeFileName ?? null,
       analysis_result: result,
