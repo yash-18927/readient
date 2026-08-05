@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RankSidebar } from "@/components/apply/rank-sidebar";
 import { CandidateReport } from "@/components/jobs/candidate-report";
 import { LinkedInUpload } from "@/components/linkedin-upload";
 import type { AnalysisResult } from "@/lib/analysis/schema";
@@ -173,6 +174,7 @@ function ApplyPage() {
             </p>
           </div>
           <CandidateReport result={outcome.result} />
+          <RankSidebar slug={slug} score={outcome.score} />
         </div>
       ) : (
         <div className="space-y-10">
