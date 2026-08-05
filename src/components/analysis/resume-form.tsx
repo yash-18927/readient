@@ -78,6 +78,7 @@ export function ResumeForm({
   const [evidence, setEvidence] = useState<Record<string, string>>(prefill?.evidence ?? {});
   const [resumeText, setResumeText] = useState(prefill?.resumeText ?? "");
   const [fileName, setFileName] = useState(prefill?.resumeFileName ?? "");
+  const [resumeError, setResumeError] = useState("");
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
