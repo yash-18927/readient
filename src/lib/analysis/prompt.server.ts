@@ -1,4 +1,6 @@
 import type { AnalysisInput } from "./schema";
+import { evidenceForField } from "./fields";
+
 
 export const SYSTEM_PROMPT = `You are a senior campus placement advisor and ATS specialist.
 You evaluate student resumes for a specific target role and return a rigorous, honest, evidence-based assessment.
@@ -46,7 +48,8 @@ Rules:
 - Level thresholds: <35 Beginner, <55 Developing, <70 Intermediate, <85 Advanced, else Industry Ready.
 - Exactly 3 items in "recommendations" and 3 in "project_suggestions".
 - 4-6 questions per interview category.
-- If a coding/GitHub profile was not provided, score those sub-scores low and say so in the credential audit — never invent evidence.
+- Coding/GitHub sub-scores apply ONLY to fields where writing code is part of the job. If the field does not use coding evidence (see APPLICABLE EVIDENCE below), score "github_profile" and "coding_profile" from the closest field-appropriate proof instead — publications, portfolio, clinical/lab work, case work, campaigns, design work — and never penalise the candidate for lacking a GitHub or LeetCode profile.
+- If evidence that IS applicable to the field was not provided, score those sub-scores low and say so in the credential audit — never invent evidence.
 - Be specific to the field and role; avoid generic filler.`;
 
 export function buildAnalysisPrompt(input: AnalysisInput): { system: string; user: string } {
@@ -55,15 +58,19 @@ export function buildAnalysisPrompt(input: AnalysisInput): { system: string; use
     .map(([key, value]) => `- ${key}: ${value.trim()}`)
     .join("\n");
 
+  const applicable = evidenceForField(input.field);
+
   const user = [
     `FIELD OF STUDY: ${input.field}`,
     `TARGET ROLE: ${input.targetRole}`,
+    `APPLICABLE EVIDENCE FOR THIS FIELD: ${applicable.join(", ")}`,
     input.jobDescription?.trim()
       ? `TARGET JOB DESCRIPTION (compare skills and keywords against this specific posting):\n"""\n${input.jobDescription.trim().slice(0, 6000)}\n"""`
       : `No job description supplied — benchmark against typical entry-level expectations for this role.`,
     evidence
-      ? `EVIDENCE OF COMPETENCE SUPPLIED BY THE STUDENT:\n${evidence}`
+      ? `EVIDENCE OF COMPETENCE SUPPLIED BY THE STUDENT (the "linkedin" entry, when present, is a parsed LinkedIn data export):\n${evidence}`
       : `EVIDENCE OF COMPETENCE: none supplied.`,
+
     `RESUME TEXT:\n"""\n${input.resumeText.slice(0, 20000)}\n"""`,
     JSON_CONTRACT,
   ].join("\n\n");

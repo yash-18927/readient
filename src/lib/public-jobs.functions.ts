@@ -60,7 +60,9 @@ const submissionInput = z.object({
   slug: z.string().min(8).max(64),
   candidateName: z.string().trim().max(120).optional(),
   candidateEmail: z.string().trim().email().max(255).optional().or(z.literal("")),
-  links: z.record(z.string(), z.string().trim().max(500)).default({}),
+  // `linkedin` carries a parsed CSV-export summary, so values can be long.
+  links: z.record(z.string(), z.string().trim().max(8000)).default({}),
+
   resumeText: z.string().min(100).max(60000),
   resumeFileName: z.string().max(255).optional(),
 });
@@ -89,21 +91,47 @@ export const submitApplication = createServerFn({ method: "POST" })
     const requirements = jobRequirementsSchema.parse(job.structured_requirements ?? {});
     const rubric = jobRubricSchema.parse(job.rubric ?? { pillar_weights: {} });
 
-    let result: AnalysisResult;
-    try {
-      const scored = await scoreCandidate({
-        title: job.title,
-        company: job.company,
-        requirements,
-        rubric,
-        resumeText: data.resumeText,
-        links: data.links,
-      });
-      result = scored.result;
-    } catch (error) {
-      if (error instanceof AnalysisError) throw new Error(error.message);
-      throw error;
+    const { hashKey } = await import("@/lib/analysis/extract.server");
+    const { analysisResultSchema } = await import("@/lib/analysis/schema");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Retrying an identical submission (e.g. after a transient provider error)
+    // must not burn another AI call.
+    const cacheKey = await hashKey(
+      ["job", job.id, data.resumeText, JSON.stringify(data.links)].join("::"),
+    );
+
+    let result: AnalysisResult | null = null;
+
+    const cached = await supabaseAdmin
+      .from("analysis_cache")
+      .select("result")
+      .eq("cache_key", cacheKey)
+      .maybeSingle();
+
+    if (cached.data?.result) {
+      const parsed = analysisResultSchema.safeParse(cached.data.result);
+      if (parsed.success) result = parsed.data;
     }
+
+    if (!result) {
+      try {
+        const scored = await scoreCandidate({
+          title: job.title,
+          company: job.company,
+          requirements,
+          rubric,
+          resumeText: data.resumeText,
+          links: data.links,
+        });
+        result = scored.result;
+      } catch (error) {
+        if (error instanceof AnalysisError) throw new Error(error.message);
+        throw error;
+      }
+      await supabaseAdmin.from("analysis_cache").upsert({ cache_key: cacheKey, result });
+    }
+
 
     const score = Math.round(result.overall_score);
 
