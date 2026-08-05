@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { UploadDropzone } from "@/components/upload-dropzone";
+import { LinkedInHelpDialog } from "@/components/linkedin-help-dialog";
 import { parseLinkedInExport, type LinkedInImport } from "@/lib/linkedin.functions";
 
 const MAX_BYTES = 10 * 1024 * 1024;
