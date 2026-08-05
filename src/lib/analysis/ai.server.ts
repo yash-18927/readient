@@ -13,6 +13,21 @@ const TIMEOUT_MS = 120_000;
 
 export class AnalysisError extends Error {}
 
+/** Thrown when a provider responds with a status that is worth retrying. */
+class ProviderStatusError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+  }
+}
+
+const isRetryableStatus = (status: number) => status === 429 || status === 408 || status >= 500;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+
 function extractJson(raw: string): unknown {
   const cleaned = raw
     .replace(/^\s*```(?:json)?/i, "")
