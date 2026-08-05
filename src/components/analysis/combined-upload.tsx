@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { parseLinkedInExport, type LinkedInImport } from "@/lib/linkedin.functions";
+import { LinkedInHelpDialog } from "@/components/linkedin-help-dialog";
 
 const MAX_RESUME_BYTES = 5 * 1024 * 1024;
 const MAX_LINKEDIN_BYTES = 10 * 1024 * 1024;
@@ -194,7 +195,7 @@ export function CombinedUpload({
           {pending ? "Reading your file…" : "Drag & drop, or click to browse"}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Resume PDF or DOCX (required) · LinkedIn export .zip or .csv (optional)
+          Resume PDF or DOCX (required) · LinkedIn profile PDF, or export .zip / .csv (optional)
         </p>
       </div>
 
@@ -264,18 +265,12 @@ export function CombinedUpload({
 
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
 
-      <p className="mt-2 text-xs text-muted-foreground">
-        LinkedIn export ›{" "}
-        <a
-          href="https://www.linkedin.com/help/linkedin/answer/a1339364"
-          target="_blank"
-          rel="noreferrer noopener"
-          className="text-primary underline underline-offset-4"
-        >
-          Settings › Data privacy › Get a copy of your data
-        </a>
-        . Only Profile, Positions, Skills and Education are read; other files are ignored.
-      </p>
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">
+          Upload your LinkedIn profile PDF (or your data export .zip for advanced analysis).
+        </p>
+        <LinkedInHelpDialog className="shrink-0" />
+      </div>
 
       <input
         ref={inputRef}
