@@ -60,7 +60,9 @@ const submissionInput = z.object({
   slug: z.string().min(8).max(64),
   candidateName: z.string().trim().max(120).optional(),
   candidateEmail: z.string().trim().email().max(255).optional().or(z.literal("")),
-  links: z.record(z.string(), z.string().trim().max(500)).default({}),
+  // `linkedin` carries a parsed CSV-export summary, so values can be long.
+  links: z.record(z.string(), z.string().trim().max(8000)).default({}),
+
   resumeText: z.string().min(100).max(60000),
   resumeFileName: z.string().max(255).optional(),
 });
