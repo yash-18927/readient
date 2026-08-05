@@ -208,6 +208,23 @@ export function ResumeForm({
               .filter((key) => key !== "linkedin")
               .map((key) => {
                 const meta = EVIDENCE_LABELS[key];
+                if (key === "github" || key === "leetcode" || key === "portfolio") {
+                  return (
+                    <div key={key} className="space-y-2">
+                      <VerifiedEvidenceInput
+                        kind={key}
+                        label={meta.label}
+                        placeholder={meta.placeholder}
+                        note={key === "leetcode" ? "best-effort — may occasionally be unavailable" : undefined}
+                        value={raw[key] ?? ""}
+                        onChange={(v) => setRaw((prev) => ({ ...prev, [key]: v }))}
+                        onResolved={(summary) =>
+                          setEvidence((prev) => ({ ...prev, [key]: summary }))
+                        }
+                      />
+                    </div>
+                  );
+                }
                 return (
                   <div key={key} className={cn("space-y-2", meta.multiline && "sm:col-span-2")}>
                     <Label htmlFor={`ev-${key}`}>{meta.label}</Label>
@@ -230,6 +247,7 @@ export function ResumeForm({
                   </div>
                 );
               })}
+
           </div>
         </Section>
       )}
