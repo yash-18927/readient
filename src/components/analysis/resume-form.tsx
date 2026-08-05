@@ -208,6 +208,8 @@ export function ResumeForm({
               <p className="mt-1 text-xs text-muted-foreground">PDF or DOCX · max 5MB</p>
             </div>
           )}
+          {resumeError && <p className="mt-2 text-xs text-destructive">{resumeError}</p>}
+
           <input
             ref={inputRef}
             type="file"
