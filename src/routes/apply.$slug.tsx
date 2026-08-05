@@ -279,15 +279,40 @@ function ApplyPage() {
                 <p className="text-xs text-muted-foreground">{resumeText.length} characters (minimum 100)</p>
               </div>
 
+              {submission.isError && (
+                <div className="border-l-2 border-destructive/70 pl-4">
+                  <p className="text-[0.65rem] tracking-[0.24em] text-destructive" style={MONO}>
+                    SCORING FAILED
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {submission.error instanceof Error
+                      ? submission.error.message
+                      : "Something went wrong while scoring your resume."}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                    disabled={submission.isPending}
+                    onClick={() => submission.mutate()}
+                  >
+                    Try again
+                  </Button>
+                </div>
+              )}
+
               <div className="flex justify-end">
                 <Button
-                  disabled={resumeText.trim().length < 100 || submission.isPending}
+                  disabled={
+                    resumeText.trim().length < 100 || submission.isPending || extraction.isPending
+                  }
                   onClick={() => submission.mutate()}
                 >
                   {submission.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
                   {submission.isPending ? "Scoring your resume…" : "Submit application"}
                 </Button>
               </div>
+
             </div>
           </Section>
         </div>
