@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { CombinedUpload } from "@/components/analysis/combined-upload";
+import { VerifiedEvidenceInput } from "@/components/analysis/verified-evidence-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -74,6 +75,7 @@ export function ResumeForm({
   const [customRole, setCustomRole] = useState("");
   const [jobDescription, setJobDescription] = useState(prefill?.jobDescription ?? "");
   const [evidence, setEvidence] = useState<Record<string, string>>(prefill?.evidence ?? {});
+  const [raw, setRaw] = useState<Record<string, string>>({});
   const [resumeText, setResumeText] = useState(prefill?.resumeText ?? "");
   const [fileName, setFileName] = useState(prefill?.resumeFileName ?? "");
 
@@ -208,6 +210,23 @@ export function ResumeForm({
               .filter((key) => key !== "linkedin")
               .map((key) => {
                 const meta = EVIDENCE_LABELS[key];
+                if (key === "github" || key === "leetcode" || key === "portfolio") {
+                  return (
+                    <div key={key} className="space-y-2">
+                      <VerifiedEvidenceInput
+                        kind={key}
+                        label={meta.label}
+                        placeholder={meta.placeholder}
+                        note={key === "leetcode" ? "best-effort — may occasionally be unavailable" : undefined}
+                        value={raw[key] ?? ""}
+                        onChange={(v) => setRaw((prev) => ({ ...prev, [key]: v }))}
+                        onResolved={(summary) =>
+                          setEvidence((prev) => ({ ...prev, [key]: summary }))
+                        }
+                      />
+                    </div>
+                  );
+                }
                 return (
                   <div key={key} className={cn("space-y-2", meta.multiline && "sm:col-span-2")}>
                     <Label htmlFor={`ev-${key}`}>{meta.label}</Label>
@@ -230,6 +249,7 @@ export function ResumeForm({
                   </div>
                 );
               })}
+
           </div>
         </Section>
       )}
