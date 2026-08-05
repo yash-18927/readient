@@ -106,7 +106,10 @@ export async function runJsonModel<T>(
       const parsed = schema.safeParse(extractJson(raw));
       if (!parsed.success) {
         throw new Error(
-          `Invalid AI shape from ${attempt.model}: ${parsed.error.issues.slice(0, 3).map((i) => i.path.join(".")).join(", ")}`,
+          `Invalid AI shape from ${attempt.model}: ${parsed.error.issues
+            .slice(0, 3)
+            .map((i) => `${i.path.join(".")} (${i.message})`)
+            .join(", ")}`,
         );
       }
       // Reported back to the caller and persisted in analysis_logs.model.
