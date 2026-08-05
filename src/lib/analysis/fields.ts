@@ -3,8 +3,7 @@ export type EvidenceKey =
   | "linkedin"
   | "portfolio"
   | "leetcode"
-  | "hackerrank"
-  | "kaggle"
+  | "other_verified"
   | "certifications"
   | "internships"
   | "projects"
@@ -15,16 +14,19 @@ export const EVIDENCE_LABELS: Record<EvidenceKey, { label: string; placeholder: 
   linkedin: { label: "LinkedIn data export (optional)", placeholder: "Upload your LinkedIn export (.zip)", multiline: true },
   portfolio: { label: "Portfolio URL", placeholder: "https://yourname.dev" },
   leetcode: { label: "LeetCode username", placeholder: "yourhandle" },
-  hackerrank: { label: "HackerRank username", placeholder: "yourhandle" },
-  kaggle: { label: "Kaggle username", placeholder: "yourhandle" },
+  other_verified: {
+    label: "Other verified work (optional)",
+    placeholder: "e.g. Solved 200+ problems on HackerRank, completed 3 Kaggle competitions.",
+    multiline: true,
+  },
   certifications: { label: "Certifications", placeholder: "AWS Cloud Practitioner, NPTEL…", multiline: true },
   internships: { label: "Internship details", placeholder: "Role, company, duration, what you did", multiline: true },
   projects: { label: "Project descriptions", placeholder: "What you built, stack, outcome", multiline: true },
   publications: { label: "Publications", placeholder: "Title, journal / conference, year", multiline: true },
 };
 
-const CORE: EvidenceKey[] = ["linkedin", "portfolio", "certifications", "internships", "projects"];
-const TECH: EvidenceKey[] = ["github", "leetcode", "hackerrank", ...CORE];
+const CORE: EvidenceKey[] = ["linkedin", "portfolio", "certifications", "internships", "projects", "other_verified"];
+const TECH: EvidenceKey[] = ["github", "leetcode", ...CORE];
 const RESEARCH: EvidenceKey[] = [...CORE, "publications"];
 
 export type FieldDef = {
@@ -48,7 +50,7 @@ export const FIELDS: FieldDef[] = [
       "Civil Site Engineer",
       "Mechanical Design Engineer",
     ],
-    evidence: [...TECH, "kaggle"],
+    evidence: TECH,
   },
   {
     name: "Pharmacy",
@@ -98,7 +100,7 @@ export const FIELDS: FieldDef[] = [
   {
     name: "Science",
     roles: ["Research Associate", "Lab Analyst", "Data Analyst", "Biotechnologist", "Environmental Scientist", "Quality Assurance Scientist"],
-    evidence: [...RESEARCH, "github", "kaggle"],
+    evidence: [...RESEARCH, "github"],
   },
   {
     name: "Hospitality",
@@ -139,5 +141,5 @@ export function rolesForField(name: string): string[] {
 }
 
 export function evidenceForField(name: string): EvidenceKey[] {
-  return getField(name)?.evidence ?? ["linkedin", "portfolio", "certifications", "internships", "projects"];
+  return getField(name)?.evidence ?? ["linkedin", "portfolio", "certifications", "internships", "projects", "other_verified"];
 }
