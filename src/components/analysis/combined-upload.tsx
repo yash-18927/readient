@@ -70,26 +70,69 @@ export function CombinedUpload({
     },
   });
 
+  const applyLinkedIn = useCallback(
+    (data: LinkedInImport, file: File) => {
+      setError("");
+      setLinkedinFileName(file.name);
+      setMeta(data);
+      onLinkedInParsed(data);
+      toast.success("LinkedIn data imported", { description: file.name });
+    },
+    [onLinkedInParsed],
+  );
+
+  const uploadResume = useCallback(
+    async (file: File) => {
+      if (file.size > MAX_RESUME_BYTES) {
+        setError("File too large — maximum resume size is 5MB.");
+        return;
+      }
+      setError("");
+      try {
+        const text = await onExtract(file);
+        onResumeChange(text, file.name);
+        toast.success("Resume uploaded", { description: file.name });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Please try another file.";
+        onResumeChange("", "");
+        setError(message);
+        toast.error("Could not read resume", { description: message });
+      }
+    },
+    [onExtract, onResumeChange],
+  );
+
   const handleFile = useCallback(
     async (file: File) => {
       const lower = file.name.toLowerCase();
 
-      if (lower.endsWith(".pdf") || lower.endsWith(".docx")) {
-        if (file.size > MAX_RESUME_BYTES) {
-          setError("File too large — maximum resume size is 5MB.");
+      if (lower.endsWith(".pdf")) {
+        if (file.size > MAX_LINKEDIN_BYTES) {
+          setError("File too large — maximum size is 10MB.");
           return;
         }
-        setError("");
+        // A PDF is either a LinkedIn profile export or a resume — detect server-side.
+        setProbing(true);
         try {
-          const text = await onExtract(file);
-          onResumeChange(text, file.name);
-          toast.success("Resume uploaded", { description: file.name });
+          const base64 = await toBase64(file);
+          const data = await parseFn({ data: { fileName: file.name, base64 } });
+          applyLinkedIn(data, file);
         } catch (err) {
-          const message = err instanceof Error ? err.message : "Please try another file.";
-          onResumeChange("", "");
-          setError(message);
-          toast.error("Could not read resume", { description: message });
+          const message = err instanceof Error ? err.message : "";
+          if (message.includes("LinkedIn profile PDF") || message.includes("could not read that PDF")) {
+            await uploadResume(file);
+          } else {
+            setError(message || "Could not read that PDF.");
+            toast.error("Could not read that file", { description: message });
+          }
+        } finally {
+          setProbing(false);
         }
+        return;
+      }
+
+      if (lower.endsWith(".docx")) {
+        await uploadResume(file);
         return;
       }
 
@@ -104,13 +147,14 @@ export function CombinedUpload({
       }
 
       setError(
-        "Unsupported file — upload a PDF/DOCX resume, or a LinkedIn export .zip or .csv.",
+        "Unsupported file — upload a PDF/DOCX resume, your LinkedIn profile PDF, or a LinkedIn export .zip or .csv.",
       );
     },
-    [linkedinUpload, onExtract, onResumeChange],
+    [applyLinkedIn, linkedinUpload, parseFn, uploadResume],
   );
 
-  const pending = extracting || linkedinUpload.isPending;
+  const pending = extracting || probing || linkedinUpload.isPending;
+
   const hasFiles = Boolean(resumeText || linkedinValue);
 
   return (
