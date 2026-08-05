@@ -238,7 +238,7 @@ function ApplyPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>LinkedIn data export (optional)</Label>
+                <Label>LinkedIn profile PDF or data export (optional)</Label>
                 <LinkedInUpload
                   value={linkedinSummary}
                   onParsed={(data) => setLinkedinSummary(data.summary)}

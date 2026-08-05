@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { UploadDropzone } from "@/components/upload-dropzone";
+import { LinkedInHelpDialog } from "@/components/linkedin-help-dialog";
 import { parseLinkedInExport, type LinkedInImport } from "@/lib/linkedin.functions";
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -69,14 +70,14 @@ export function LinkedInUpload({
   const handleFile = useCallback(
     (file: File) => {
       const lower = file.name.toLowerCase();
-      if (!lower.endsWith(".zip") && !lower.endsWith(".csv")) {
+      if (!lower.endsWith(".pdf") && !lower.endsWith(".zip") && !lower.endsWith(".csv")) {
         setError(
-          "Unsupported file — upload your LinkedIn data export .zip, or a single Profile/Positions/Skills/Education CSV.",
+          "Unsupported file — upload your LinkedIn profile PDF, your data export .zip, or a single Profile/Positions/Skills/Education CSV.",
         );
         return;
       }
       if (file.size > MAX_BYTES) {
-        setError("File too large — maximum export size is 10MB.");
+        setError("File too large — maximum size is 10MB.");
         return;
       }
       setError("");
@@ -89,7 +90,7 @@ export function LinkedInUpload({
     <div>
       <UploadDropzone
         size="sm"
-        accept=".zip,.csv,application/zip,text/csv"
+        accept=".pdf,.zip,.csv,application/pdf,application/zip,text/csv"
         filled={Boolean(value)}
         fileName={fileName || "LinkedIn export"}
         fileMeta={
@@ -97,11 +98,11 @@ export function LinkedInUpload({
             ? `${meta.positions} positions · ${meta.skills} skills · ${meta.education} education entries`
             : `${value?.length.toLocaleString() ?? 0} characters imported`
         }
-        clearLabel="Remove LinkedIn export"
+        clearLabel="Remove LinkedIn data"
         pending={upload.isPending}
-        pendingLabel="Reading your export…"
+        pendingLabel="Reading your LinkedIn data…"
         idleLabel="Drag & drop, or click to browse"
-        hint="LinkedIn export .zip, or a single Profile/Positions/Skills/Education .csv"
+        hint="LinkedIn profile PDF (quickest), or a data export .zip / .csv"
         error={error}
         onFile={handleFile}
         onClear={() => {
@@ -112,19 +113,14 @@ export function LinkedInUpload({
         }}
       />
 
-      <p className="mt-2 text-xs text-muted-foreground">
-        Get it from LinkedIn ›{" "}
-        <a
-          href="https://www.linkedin.com/help/linkedin/answer/a1339364"
-          target="_blank"
-          rel="noreferrer noopener"
-          className="text-primary underline underline-offset-4"
-        >
-          Settings › Data privacy › Get a copy of your data
-        </a>
-        . Only Profile, Positions, Skills and Education are read; other files are ignored.
-      </p>
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">
+          Upload your LinkedIn profile PDF (or your data export .zip for advanced analysis).
+        </p>
+        <LinkedInHelpDialog className="shrink-0" />
+      </div>
     </div>
   );
 }
+
 

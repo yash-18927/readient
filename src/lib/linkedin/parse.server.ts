@@ -279,3 +279,210 @@ export function parseLinkedInCsv(base64: string): LinkedInExport {
   return buildExport(new Map([[match.file, text]]));
 }
 
+
+/* ------------------------------------------------------------------ */
+/* LinkedIn "Save to PDF" profile export                              */
+/* ------------------------------------------------------------------ */
+
+const PDF_HEADINGS = [
+  "contact",
+  "top skills",
+  "skills",
+  "languages",
+  "certifications",
+  "honors-awards",
+  "honors & awards",
+  "publications",
+  "summary",
+  "experience",
+  "education",
+] as const;
+
+function isHeading(line: string): string | null {
+  const norm = line.trim().toLowerCase().replace(/\s+/g, " ");
+  return (PDF_HEADINGS as readonly string[]).includes(norm) ? norm : null;
+}
+
+/** Splits the raw PDF text into { heading -> lines } plus the leading header block. */
+function splitPdfSections(text: string) {
+  const lines = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l && !/^page \d+ of \d+$/i.test(l));
+
+  const head: string[] = [];
+  const sections = new Map<string, string[]>();
+  let current: string | null = null;
+
+  for (const line of lines) {
+    const heading = isHeading(line);
+    if (heading) {
+      current = heading === "skills" ? "top skills" : heading;
+      if (!sections.has(current)) sections.set(current, []);
+      continue;
+    }
+    if (current) sections.get(current)!.push(line);
+    else head.push(line);
+  }
+  return { head, sections };
+}
+
+/** True when the extracted text has the shape of a LinkedIn profile PDF. */
+export function looksLikeLinkedInPdf(text: string): boolean {
+  const lower = text.toLowerCase();
+  const hasProfileUrl = /linkedin\.com\/in\//i.test(text);
+  const markers = ["top skills", "contact", "certifications", "experience", "education"].filter(
+    (m) => lower.includes(m),
+  ).length;
+  return (hasProfileUrl && markers >= 2) || markers >= 4;
+}
+
+const DATE_RANGE =
+  /\(?\b((?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)?\s?\d{4})\s*[-–—]\s*(present|(?:[a-z]+\s)?\d{4})\)?/i;
+
+function parseHeaderBlock(head: string[], contactLines: string[]): LinkedInProfile | null {
+  const name = head[0];
+  if (!name) return null;
+  const headline = head[1];
+  const location = head[2];
+  const email = contactLines.find((l) => /[\w.+-]+@[\w-]+\.[a-z]{2,}/i.test(l));
+  const summaryBits = [email?.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i)?.[0]].filter(Boolean);
+  return {
+    firstName: clean(name.split(" ")[0]),
+    lastName: clean(name.split(" ").slice(1).join(" ")),
+    headline: clean(headline),
+    location: clean(location),
+    summary: summaryBits.length ? `Contact: ${summaryBits.join(", ")}` : undefined,
+  };
+}
+
+const NAME_LINE = /^[A-Z][\p{L}.'-]+(?: [A-Z][\p{L}.'-]+){1,3}$/u;
+
+/**
+ * LinkedIn's PDF is two-column, so the name/headline/location block often lands
+ * inside a sidebar section instead of at the top of the extracted text.
+ */
+function parseHeaderFallback(
+  sections: Map<string, string[]>,
+  contactLines: string[],
+): LinkedInProfile | null {
+  const lines = Array.from(sections.values()).flat();
+  for (let i = 0; i < lines.length - 2; i++) {
+    const name = lines[i]!;
+    if (!NAME_LINE.test(name)) continue;
+    const headline = lines[i + 1]!;
+    const location = lines[i + 2]!;
+    if (!location.includes(",")) continue;
+    // Remove the header lines so they are not mistaken for sidebar entries.
+    for (const [key, value] of sections) {
+      sections.set(
+        key,
+        value.filter((l) => l !== name && l !== headline && l !== location),
+      );
+    }
+    return parseHeaderBlock([name, headline, location], contactLines);
+  }
+  return null;
+}
+
+function parsePdfExperience(lines: string[]): LinkedInPosition[] {
+  const positions: LinkedInPosition[] = [];
+  let company: string | undefined;
+  let pending: LinkedInPosition | null = null;
+
+  for (const line of lines) {
+    const match = line.match(DATE_RANGE);
+    if (match) {
+      if (pending) {
+        pending.startedOn = clean(match[1]);
+        pending.finishedOn = /present/i.test(match[2] ?? "") ? undefined : clean(match[2]);
+        positions.push(pending);
+        pending = null;
+      }
+      continue;
+    }
+    if (!pending) {
+      // First unmatched line after a completed entry is the company, next is the title.
+      if (!company) {
+        company = line;
+      } else {
+        pending = { title: clean(line), company: clean(company) };
+        company = undefined;
+      }
+    } else if (!pending.location) {
+      pending.location = clean(line);
+    }
+  }
+  if (pending) positions.push(pending);
+  return positions.filter((p) => p.title || p.company);
+}
+
+function parsePdfEducation(lines: string[]): LinkedInEducation[] {
+  const education: LinkedInEducation[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const school = lines[i]!;
+    const next = lines[i + 1];
+    if (!next) {
+      education.push({ school: clean(school) });
+      break;
+    }
+    const dates = next.match(DATE_RANGE);
+    const detail = next.replace(DATE_RANGE, "").replace(/[·|,]\s*$/, "").trim();
+    education.push({
+      school: clean(school),
+      degree: clean(detail.split("·")[0]),
+      fieldOfStudy: clean(detail.split("·")[1]),
+      startedOn: clean(dates?.[1]),
+      finishedOn: clean(dates?.[2]),
+    });
+    i++;
+  }
+  return education.filter((e) => e.school);
+}
+
+/** Parses a base64 LinkedIn profile PDF ("More › Save to PDF"). */
+export async function parseLinkedInPdf(base64: string): Promise<LinkedInExport> {
+  let text: string;
+  try {
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    const { extractText, getDocumentProxy } = await import("unpdf");
+    const pdf = await getDocumentProxy(bytes);
+    const extracted = await extractText(pdf, { mergePages: true });
+    text = Array.isArray(extracted.text) ? extracted.text.join("\n") : extracted.text;
+  } catch {
+    throw new LinkedInExportError("We could not read that PDF. Please re-download it from LinkedIn.");
+  }
+
+  if (!looksLikeLinkedInPdf(text)) {
+    throw new LinkedInExportError(
+      "This doesn't look like a LinkedIn profile PDF — open your profile, choose More › Save to PDF, and upload that file.",
+    );
+  }
+
+  const { head, sections } = splitPdfSections(text);
+  const get = (key: string) => sections.get(key) ?? [];
+
+  const profile =
+    parseHeaderBlock(head, get("contact")) ?? parseHeaderFallback(sections, get("contact"));
+  const skills = Array.from(new Set(get("top skills").map((s) => s.trim()).filter(Boolean)));
+  const certifications = get("certifications").map((c) => c.trim()).filter(Boolean);
+  const positions = parsePdfExperience(get("experience"));
+  const education = parsePdfEducation(get("education"));
+
+  if (profile && certifications.length) {
+    profile.summary = [profile.summary, `Certifications: ${certifications.join(", ")}`]
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  const filesFound = ["profile.pdf"];
+  const base = { profile, positions, skills, education, filesFound, filesMissing: [] };
+  const summary = buildSummary(base);
+
+  if (!summary) {
+    throw new LinkedInExportError(
+      "We could not read any profile details from that PDF. Please re-download it from LinkedIn.",
+    );
+  }
+  return { ...base, summary };
+}
