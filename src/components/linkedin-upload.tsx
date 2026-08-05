@@ -147,7 +147,7 @@ export function LinkedInUpload({
           {upload.isPending ? "Reading your export…" : "Drop your LinkedIn data export (.zip)"}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          LinkedIn does not allow profile scraping — upload the archive instead.
+          Upload the .zip file from LinkedIn's "Get a copy of your data" export.
         </p>
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
