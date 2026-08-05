@@ -14,8 +14,6 @@ import {
 } from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
-import { LinkedInDropzone } from "@/components/analysis/linkedin-dropzone";
-
 import {
   EVIDENCE_LABELS,
   FIELDS,
@@ -95,12 +93,7 @@ export function ResumeForm({
   }, [prefill]);
 
   const roles = useMemo(() => (field ? rolesForField(field) : []), [field]);
-  // `linkedin` is collected through the CSV drop box above, not as a text field.
-  const evidenceKeys: EvidenceKey[] = useMemo(
-    () => (field ? evidenceForField(field).filter((key) => key !== "linkedin") : []),
-    [field],
-  );
-
+  const evidenceKeys: EvidenceKey[] = useMemo(() => (field ? evidenceForField(field) : []), [field]);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -149,8 +142,7 @@ export function ResumeForm({
       }}
     >
       <Section index="01" title="Your resume">
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div>
+        <div>
 
           {resumeText ? (
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-transparent px-4 py-3">
@@ -220,17 +212,8 @@ export function ResumeForm({
               e.target.value = "";
             }}
           />
-          </div>
-
-          <div>
-            <LinkedInDropzone
-              value={evidence.linkedin ?? ""}
-              onChange={(summary) => setEvidence((prev) => ({ ...prev, linkedin: summary }))}
-            />
-          </div>
         </div>
       </Section>
-
 
 
       <Section index="02" title="Target role">

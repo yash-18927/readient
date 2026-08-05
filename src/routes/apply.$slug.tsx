@@ -9,8 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CandidateReport } from "@/components/jobs/candidate-report";
-import { LinkedInDropzone } from "@/components/analysis/linkedin-dropzone";
-
 import type { AnalysisResult } from "@/lib/analysis/schema";
 import {
   extractPublicResume,
@@ -82,8 +80,6 @@ function ApplyPage() {
   const [email, setEmail] = useState("");
   const [github, setGithub] = useState("");
   const [portfolio, setPortfolio] = useState("");
-  const [linkedin, setLinkedin] = useState("");
-
   const [resumeText, setResumeText] = useState("");
   const [fileName, setFileName] = useState<string | undefined>();
   const [outcome, setOutcome] = useState<{ score: number; result: AnalysisResult } | null>(null);
@@ -113,8 +109,6 @@ function ApplyPage() {
           links: {
             ...(github.trim() ? { github: github.trim() } : {}),
             ...(portfolio.trim() ? { portfolio: portfolio.trim() } : {}),
-            ...(linkedin.trim() ? { linkedin: linkedin.trim() } : {}),
-
           },
           resumeText,
           resumeFileName: fileName,
@@ -230,7 +224,7 @@ function ApplyPage() {
                   <Input id="cand-github" value={github} onChange={(e) => setGithub(e.target.value)} maxLength={500} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cand-portfolio">Portfolio (optional)</Label>
+                  <Label htmlFor="cand-portfolio">Portfolio / LinkedIn (optional)</Label>
                   <Input
                     id="cand-portfolio"
                     value={portfolio}
@@ -239,12 +233,6 @@ function ApplyPage() {
                   />
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <Label>LinkedIn export (optional)</Label>
-                <LinkedInDropzone value={linkedin} onChange={setLinkedin} />
-              </div>
-
 
               <div className="space-y-2">
                 <Label htmlFor="cand-file">Resume (PDF, DOCX or TXT)</Label>
@@ -291,40 +279,15 @@ function ApplyPage() {
                 <p className="text-xs text-muted-foreground">{resumeText.length} characters (minimum 100)</p>
               </div>
 
-              {submission.isError && (
-                <div className="border-l-2 border-destructive/70 pl-4">
-                  <p className="text-[0.65rem] tracking-[0.24em] text-destructive" style={MONO}>
-                    SCORING FAILED
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {submission.error instanceof Error
-                      ? submission.error.message
-                      : "Something went wrong while scoring your resume."}
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-4"
-                    disabled={submission.isPending}
-                    onClick={() => submission.mutate()}
-                  >
-                    Try again
-                  </Button>
-                </div>
-              )}
-
               <div className="flex justify-end">
                 <Button
-                  disabled={
-                    resumeText.trim().length < 100 || submission.isPending || extraction.isPending
-                  }
+                  disabled={resumeText.trim().length < 100 || submission.isPending}
                   onClick={() => submission.mutate()}
                 >
                   {submission.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
                   {submission.isPending ? "Scoring your resume…" : "Submit application"}
                 </Button>
               </div>
-
             </div>
           </Section>
         </div>
