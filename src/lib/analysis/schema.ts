@@ -2,7 +2,40 @@ import { z } from "zod";
 
 const score = z.coerce.number().min(0).max(100);
 const smallScore = z.coerce.number().min(0);
-const stringList = z.array(z.string()).default([]);
+/** Models sometimes return a comma-joined string (or null) where a list is expected. */
+const stringList = z.preprocess((value) => {
+  if (value == null) return [];
+  if (typeof value === "string") return value.split(",").map((s) => s.trim()).filter(Boolean);
+  if (Array.isArray(value)) return value.map((v) => (typeof v === "string" ? v : String(v ?? ""))).filter(Boolean);
+  return [];
+}, z.array(z.string()).default([]));
+
+/** Accepts the common field-name variants models emit for project suggestions. */
+const projectSuggestion = z.preprocess((value) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const raw = value as Record<string, unknown>;
+  const pick = (...keys: string[]) => {
+    for (const key of keys) {
+      const v = raw[key];
+      if (v != null && v !== "") return typeof v === "string" ? v : String(v);
+    }
+    return "";
+  };
+  return {
+    name: pick("name", "title", "project", "project_name"),
+    description: pick("description", "summary", "details", "overview"),
+    skills: raw["skills"] ?? raw["skills_practiced"] ?? raw["technologies"] ?? raw["tech_stack"] ?? [],
+    difficulty: pick("difficulty", "level", "complexity") || "Intermediate",
+    estimated_time: pick("estimated_time", "time_estimate", "estimatedTime", "duration", "time"),
+  };
+}, z.object({
+  name: z.string(),
+  description: z.string(),
+  skills: stringList,
+  difficulty: z.string(),
+  estimated_time: z.string(),
+}));
+
 
 export const readinessLevels = [
   "Beginner",
@@ -86,17 +119,8 @@ export const analysisResultSchema = z.object({
     behavioral: stringList,
     portfolio: stringList,
   }),
-  project_suggestions: z
-    .array(
-      z.object({
-        name: z.string(),
-        description: z.string(),
-        skills: stringList,
-        difficulty: z.string(),
-        estimated_time: z.string(),
-      }),
-    )
-    .default([]),
+  project_suggestions: z.array(projectSuggestion).default([]),
+
 });
 
 export type AnalysisResult = z.infer<typeof analysisResultSchema>;
