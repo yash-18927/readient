@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
+import { LinkedInUpload } from "@/components/linkedin-upload";
 import {
   EVIDENCE_LABELS,
   FIELDS,
@@ -292,7 +293,15 @@ export function ResumeForm({
               return (
                 <div key={key} className={cn("space-y-2", meta.multiline && "sm:col-span-2")}>
                   <Label htmlFor={`ev-${key}`}>{meta.label}</Label>
-                  {meta.multiline ? (
+                  {key === "linkedin" ? (
+                    <LinkedInUpload
+                      value={evidence[key] ?? ""}
+                      onParsed={(data) =>
+                        setEvidence((prev) => ({ ...prev, linkedin: data.summary }))
+                      }
+                      onClear={() => setEvidence((prev) => ({ ...prev, linkedin: "" }))}
+                    />
+                  ) : meta.multiline ? (
                     <Textarea
                       id={`ev-${key}`}
                       rows={3}
