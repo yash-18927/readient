@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
+import { LinkedInUpload } from "@/components/linkedin-upload";
 import {
   EVIDENCE_LABELS,
   FIELDS,
