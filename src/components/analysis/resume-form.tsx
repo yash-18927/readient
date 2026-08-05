@@ -32,7 +32,6 @@ export type ResumeFormValues = {
   resumeFileName?: string;
 };
 
-const MAX_BYTES = 5 * 1024 * 1024;
 
 const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
 
@@ -77,7 +76,6 @@ export function ResumeForm({
   const [evidence, setEvidence] = useState<Record<string, string>>(prefill?.evidence ?? {});
   const [resumeText, setResumeText] = useState(prefill?.resumeText ?? "");
   const [fileName, setFileName] = useState(prefill?.resumeFileName ?? "");
-  const [resumeError, setResumeError] = useState("");
 
   useEffect(() => {
     if (!prefill) return;
