@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, FileText, Linkedin, Loader2, UploadCloud, X } from "lucide-react";
+import { Check, CheckCircle2, FileText, Linkedin, Loader2, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,23 @@ function toBase64(file: File): Promise<string> {
     };
     reader.readAsDataURL(file);
   });
+}
+
+function StatusCheck({ done, label, note }: { done: boolean; label: string; note: string }) {
+  return (
+    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <span
+        className={cn(
+          "flex size-3.5 items-center justify-center rounded-[3px] border transition-colors",
+          done ? "border-primary bg-primary/15 text-primary" : "border-border",
+        )}
+      >
+        {done && <Check className="size-2.5" strokeWidth={3} />}
+      </span>
+      <span className={cn(done && "text-foreground")}>{label}</span>
+      <span className="opacity-60">({note})</span>
+    </span>
+  );
 }
 
 export function CombinedUpload({
@@ -47,6 +64,7 @@ export function CombinedUpload({
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
   const [linkedinFileName, setLinkedinFileName] = useState("");
+  const [linkedinKind, setLinkedinKind] = useState<"pdf" | "zip" | "csv" | null>(null);
   const [probing, setProbing] = useState(false);
   const [meta, setMeta] = useState<LinkedInImport | null>(null);
 
@@ -57,6 +75,7 @@ export function CombinedUpload({
     },
     onSuccess: (data, file) => {
       setError("");
+      setLinkedinKind(file.name.toLowerCase().endsWith(".zip") ? "zip" : "csv");
       setLinkedinFileName(file.name);
       setMeta(data);
       onLinkedInParsed(data);
@@ -66,6 +85,7 @@ export function CombinedUpload({
       const message = err instanceof Error ? err.message : "Please try again.";
       setError(message);
       setLinkedinFileName("");
+      setLinkedinKind(null);
       setMeta(null);
       onLinkedInClear();
       toast.error("Could not import that file", { description: message });
@@ -76,6 +96,7 @@ export function CombinedUpload({
     (data: LinkedInImport, file: File) => {
       setError("");
       setLinkedinFileName(file.name);
+      setLinkedinKind("pdf");
       setMeta(data);
       onLinkedInParsed(data);
       toast.success("LinkedIn data imported", { description: file.name });
@@ -194,9 +215,7 @@ export function CombinedUpload({
         <p className="mt-3 text-sm font-medium">
           {pending ? "Reading your file…" : "Drag & drop, or click to browse"}
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Resume PDF or DOCX (required) · LinkedIn profile PDF, or export .zip / .csv (optional)
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">PDF, DOCX, ZIP or CSV</p>
       </div>
 
       {(resumeText || linkedinValue) && (
@@ -251,6 +270,7 @@ export function CombinedUpload({
                 aria-label="Remove LinkedIn export"
                 onClick={() => {
                   setLinkedinFileName("");
+                  setLinkedinKind(null);
                   setMeta(null);
                   setError("");
                   onLinkedInClear();
@@ -265,12 +285,26 @@ export function CombinedUpload({
 
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
 
-      <div className="mt-2 flex items-center justify-between gap-3">
-        <p className="text-xs text-muted-foreground">
-          Upload your LinkedIn profile PDF (or your data export .zip for advanced analysis).
-        </p>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-4">
+          <StatusCheck done={Boolean(resumeText)} label="Resume" note="required" />
+          <StatusCheck
+            done={Boolean(linkedinValue)}
+            label={
+              linkedinKind === "pdf"
+                ? "LinkedIn PDF"
+                : linkedinKind === "zip"
+                  ? "LinkedIn ZIP"
+                  : linkedinKind === "csv"
+                    ? "LinkedIn CSV"
+                    : "LinkedIn"
+            }
+            note="optional"
+          />
+        </div>
         <LinkedInHelpDialog className="shrink-0" />
       </div>
+
 
       <input
         ref={inputRef}
