@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { UploadDropzone } from "@/components/upload-dropzone";
-import { toast } from "sonner";
+import { CombinedUpload } from "@/components/analysis/combined-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,6 @@ import {
 } from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
-import { LinkedInUpload } from "@/components/linkedin-upload";
 import {
   EVIDENCE_LABELS,
   FIELDS,
