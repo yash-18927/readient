@@ -80,8 +80,6 @@ export function ResumeForm({
   const [resumeText, setResumeText] = useState(prefill?.resumeText ?? "");
   const [fileName, setFileName] = useState(prefill?.resumeFileName ?? "");
   const [resumeError, setResumeError] = useState("");
-  const [dragging, setDragging] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!prefill) return;
