@@ -46,6 +46,7 @@ export function CombinedUpload({
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
   const [linkedinFileName, setLinkedinFileName] = useState("");
+  const [probing, setProbing] = useState(false);
   const [meta, setMeta] = useState<LinkedInImport | null>(null);
 
   const linkedinUpload = useMutation({
