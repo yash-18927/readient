@@ -49,10 +49,21 @@ export const analyzeResume = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => analyzeInput.parse(data))
   .handler(async ({ data, context }): Promise<AnalysisRecord> => {
-    const { hashKey } = await import("@/lib/analysis/extract.server");
+    const { hashKey, assertLooksLikeResume, ExtractionError } = await import(
+      "@/lib/analysis/extract.server"
+    );
     const { runAnalysisModel, AnalysisError } = await import("@/lib/analysis/ai.server");
     const { analysisResultSchema } = await import("@/lib/analysis/schema");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Cheap guard so invalid uploads never burn AI credits.
+    try {
+      assertLooksLikeResume(data.resumeText);
+    } catch (error) {
+      if (error instanceof ExtractionError) throw new Error(error.message);
+      throw error;
+    }
+
 
     const resumeHash = await hashKey(data.resumeText);
     const cacheKey = await hashKey(
