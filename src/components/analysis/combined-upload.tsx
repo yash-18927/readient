@@ -253,6 +253,7 @@ export function CombinedUpload({
                 aria-label="Remove LinkedIn export"
                 onClick={() => {
                   setLinkedinFileName("");
+                  setLinkedinKind(null);
                   setMeta(null);
                   setError("");
                   onLinkedInClear();
@@ -267,12 +268,26 @@ export function CombinedUpload({
 
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
 
-      <div className="mt-2 flex items-center justify-between gap-3">
-        <p className="text-xs text-muted-foreground">
-          Upload your LinkedIn profile PDF (or your data export .zip for advanced analysis).
-        </p>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-4">
+          <StatusCheck done={Boolean(resumeText)} label="Resume" note="required" />
+          <StatusCheck
+            done={Boolean(linkedinValue)}
+            label={
+              linkedinKind === "pdf"
+                ? "LinkedIn PDF"
+                : linkedinKind === "zip"
+                  ? "LinkedIn ZIP"
+                  : linkedinKind === "csv"
+                    ? "LinkedIn CSV"
+                    : "LinkedIn"
+            }
+            note="optional"
+          />
+        </div>
         <LinkedInHelpDialog className="shrink-0" />
       </div>
+
 
       <input
         ref={inputRef}
