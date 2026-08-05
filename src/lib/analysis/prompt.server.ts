@@ -50,9 +50,18 @@ Rules:
 - Be specific to the field and role; avoid generic filler.`;
 
 export function buildAnalysisPrompt(input: AnalysisInput): { system: string; user: string } {
+  const VERIFIABLE = new Set(["github", "leetcode", "portfolio"]);
   const evidence = Object.entries(input.evidence)
     .filter(([, value]) => value && value.trim())
-    .map(([key, value]) => `- ${key}: ${value.trim()}`)
+    .map(([key, value]) => {
+      const text = value.trim();
+      if (key === "linkedin") return `- ${key} [VERIFIED: parsed from the student's own LinkedIn export]: ${text}`;
+      if (VERIFIABLE.has(key)) {
+        const verified = text.includes("VERIFIED");
+        return `- ${key} [${verified ? "VERIFIED by a live API/page lookup — treat these numbers as factual" : "UNVERIFIED — the lookup failed or the account does not exist; do not credit it as proof of work"}]: ${text}`;
+      }
+      return `- ${key} [SELF-REPORTED, UNVERIFIED — treat with appropriate skepticism and do not treat as confirmed proof]: ${text}`;
+    })
     .join("\n");
 
   const user = [
