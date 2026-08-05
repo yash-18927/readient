@@ -1,10 +1,8 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, Loader2, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { UploadDropzone } from "@/components/upload-dropzone";
 import { parseLinkedInExport, type LinkedInImport } from "@/lib/linkedin.functions";
 
 const MAX_BYTES = 10 * 1024 * 1024;
