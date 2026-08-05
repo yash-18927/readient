@@ -198,9 +198,7 @@ export function CombinedUpload({
         <p className="mt-3 text-sm font-medium">
           {pending ? "Reading your file…" : "Drag & drop, or click to browse"}
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Resume PDF or DOCX (required) · LinkedIn profile PDF, or export .zip / .csv (optional)
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">PDF, DOCX, ZIP or CSV</p>
       </div>
 
       {(resumeText || linkedinValue) && (
