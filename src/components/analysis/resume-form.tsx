@@ -236,44 +236,37 @@ export function ResumeForm({
       </Section>
 
 
-      {evidenceKeys.length > 0 && (
+      {evidenceKeys.filter((k) => k !== "linkedin").length > 0 && (
         <Section index="03" title="Evidence of competence (optional)">
           <div className="grid gap-4 sm:grid-cols-2">
-            {evidenceKeys.map((key) => {
-              const meta = EVIDENCE_LABELS[key];
-              return (
-                <div key={key} className={cn("space-y-2", meta.multiline && "sm:col-span-2")}>
-                  <Label htmlFor={`ev-${key}`}>{meta.label}</Label>
-                  {key === "linkedin" ? (
-                    <LinkedInUpload
-                      value={evidence[key] ?? ""}
-                      onParsed={(data) =>
-                        setEvidence((prev) => ({ ...prev, linkedin: data.summary }))
-                      }
-                      onClear={() => setEvidence((prev) => ({ ...prev, linkedin: "" }))}
-                    />
-                  ) : meta.multiline ? (
-                    <Textarea
-                      id={`ev-${key}`}
-                      rows={3}
-                      value={evidence[key] ?? ""}
-                      placeholder={meta.placeholder}
-                      onChange={(e) => setEvidence((prev) => ({ ...prev, [key]: e.target.value }))}
-                    />
-                  ) : (
-                    <Input
-                      id={`ev-${key}`}
-                      value={evidence[key] ?? ""}
-                      placeholder={meta.placeholder}
-                      onChange={(e) => setEvidence((prev) => ({ ...prev, [key]: e.target.value }))}
-                    />
-                  )}
-                </div>
-              );
-            })}
+            {evidenceKeys
+              .filter((key) => key !== "linkedin")
+              .map((key) => {
+                const meta = EVIDENCE_LABELS[key];
+                return (
+                  <div key={key} className={cn("space-y-2", meta.multiline && "sm:col-span-2")}>
+                    <Label htmlFor={`ev-${key}`}>{meta.label}</Label>
+                    {meta.multiline ? (
+                      <Textarea
+                        id={`ev-${key}`}
+                        rows={3}
+                        value={evidence[key] ?? ""}
+                        placeholder={meta.placeholder}
+                        onChange={(e) => setEvidence((prev) => ({ ...prev, [key]: e.target.value }))}
+                      />
+                    ) : (
+                      <Input
+                        id={`ev-${key}`}
+                        value={evidence[key] ?? ""}
+                        placeholder={meta.placeholder}
+                        onChange={(e) => setEvidence((prev) => ({ ...prev, [key]: e.target.value }))}
+                      />
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </Section>
-
       )}
 
       <div className="flex justify-end">
