@@ -95,7 +95,12 @@ export function ResumeForm({
   }, [prefill]);
 
   const roles = useMemo(() => (field ? rolesForField(field) : []), [field]);
-  const evidenceKeys: EvidenceKey[] = useMemo(() => (field ? evidenceForField(field) : []), [field]);
+  // `linkedin` is collected through the CSV drop box above, not as a text field.
+  const evidenceKeys: EvidenceKey[] = useMemo(
+    () => (field ? evidenceForField(field).filter((key) => key !== "linkedin") : []),
+    [field],
+  );
+
 
   const handleFile = useCallback(
     async (file: File) => {
