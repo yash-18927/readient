@@ -68,6 +68,7 @@ export function CombinedUpload({
       const message = err instanceof Error ? err.message : "Please try again.";
       setError(message);
       setLinkedinFileName("");
+      setLinkedinKind(null);
       setMeta(null);
       onLinkedInClear();
       toast.error("Could not import that file", { description: message });
@@ -78,6 +79,7 @@ export function CombinedUpload({
     (data: LinkedInImport, file: File) => {
       setError("");
       setLinkedinFileName(file.name);
+      setLinkedinKind("pdf");
       setMeta(data);
       onLinkedInParsed(data);
       toast.success("LinkedIn data imported", { description: file.name });
