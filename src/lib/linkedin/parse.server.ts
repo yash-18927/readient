@@ -137,34 +137,9 @@ function buildSummary(data: Omit<LinkedInExport, "summary">): string {
   return parts.join("\n").slice(0, 12000);
 }
 
-/** Parses a base64 LinkedIn "Get a copy of your data" zip export. */
-export function parseLinkedInZip(base64: string): LinkedInExport {
-  let files: Record<string, Uint8Array>;
-  try {
-    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-    files = unzipSync(bytes);
-  } catch {
-    throw new LinkedInExportError("We could not open that zip file. Please upload the original archive.");
-  }
-
-  const byName = new Map<string, Uint8Array>();
-  for (const [path, content] of Object.entries(files)) {
-    const base = path.split("/").pop()?.toLowerCase();
-    if (base && (WANTED as readonly string[]).includes(base) && !byName.has(base)) {
-      byName.set(base, content);
-    }
-  }
-
-  if (byName.size === 0) {
-    throw new LinkedInExportError(
-      "This doesn't look like a LinkedIn data export — please upload the zip file from LinkedIn's 'Get a copy of your data' feature.",
-    );
-  }
-
-  const read = (name: string) => {
-    const raw = byName.get(name);
-    return raw ? strFromU8(raw) : null;
-  };
+/** Builds the export object from whichever LinkedIn CSV texts were found. */
+function buildExport(texts: Map<string, string>): LinkedInExport {
+  const read = (name: string) => texts.get(name) ?? null;
 
   let profile: LinkedInProfile | null = null;
   const profileCsv = read("profile.csv");
@@ -220,16 +195,87 @@ export function parseLinkedInZip(base64: string): LinkedInExport {
         .filter((row) => row.school || row.degree)
     : [];
 
-  const filesFound = (WANTED as readonly string[]).filter((name) => byName.has(name));
-  const filesMissing = (WANTED as readonly string[]).filter((name) => !byName.has(name));
+  const filesFound = (WANTED as readonly string[]).filter((name) => texts.has(name));
+  const filesMissing = (WANTED as readonly string[]).filter((name) => !texts.has(name));
   const base = { profile, positions, skills, education, filesFound, filesMissing };
   const summary = buildSummary(base);
 
   if (!summary) {
     throw new LinkedInExportError(
-      "We found LinkedIn files in that zip but no readable profile data. Please re-download your export.",
+      "We found LinkedIn files but no readable profile data. Please re-download your export.",
     );
   }
 
   return { ...base, summary };
 }
+
+/** Parses a base64 LinkedIn "Get a copy of your data" zip export. */
+export function parseLinkedInZip(base64: string): LinkedInExport {
+  let files: Record<string, Uint8Array>;
+  try {
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    files = unzipSync(bytes);
+  } catch {
+    throw new LinkedInExportError("We could not open that zip file. Please upload the original archive.");
+  }
+
+  const texts = new Map<string, string>();
+  for (const [path, content] of Object.entries(files)) {
+    const base = path.split("/").pop()?.toLowerCase();
+    if (base && (WANTED as readonly string[]).includes(base) && !texts.has(base)) {
+      texts.set(base, strFromU8(content));
+    }
+  }
+
+  if (texts.size === 0) {
+    throw new LinkedInExportError(
+      "This doesn't look like a LinkedIn data export — please upload the zip file from LinkedIn's 'Get a copy of your data' feature.",
+    );
+  }
+
+  return buildExport(texts);
+}
+
+/** Column signatures used to recognise a loose LinkedIn CSV even if it was renamed. */
+const CSV_SIGNATURES: { file: string; required: string[] }[] = [
+  { file: "positions.csv", required: ["company name", "title"] },
+  { file: "education.csv", required: ["school name"] },
+  { file: "profile.csv", required: ["first name", "last name"] },
+  { file: "skills.csv", required: ["name"] },
+];
+
+/** Parses a single loose LinkedIn CSV, detecting its type from the header row. */
+export function parseLinkedInCsv(base64: string): LinkedInExport {
+  let text: string;
+  try {
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    text = strFromU8(bytes);
+  } catch {
+    throw new LinkedInExportError("We could not read that CSV file. Please upload the original export.");
+  }
+
+  const rows = parseCsv(text);
+  const headers = new Set(
+    rows
+      .slice(0, 5)
+      .flat()
+      .map((cell) => cell.trim().toLowerCase()),
+  );
+
+  const match = CSV_SIGNATURES.find((sig) => sig.required.every((col) => headers.has(col)));
+  if (!match) {
+    throw new LinkedInExportError(
+      "This doesn't look like a LinkedIn export file — upload your LinkedIn data export .zip, or one of its Profile/Positions/Skills/Education CSV files.",
+    );
+  }
+
+  // skills.csv only has a "name" column; make sure a richer file isn't misread as skills.
+  if (match.file === "skills.csv" && (headers.has("company name") || headers.has("school name"))) {
+    throw new LinkedInExportError(
+      "This doesn't look like a LinkedIn export file — upload your LinkedIn data export .zip instead.",
+    );
+  }
+
+  return buildExport(new Map([[match.file, text]]));
+}
+
