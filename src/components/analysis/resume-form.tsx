@@ -94,33 +94,6 @@ export function ResumeForm({
   const roles = useMemo(() => (field ? rolesForField(field) : []), [field]);
   const evidenceKeys: EvidenceKey[] = useMemo(() => (field ? evidenceForField(field) : []), [field]);
 
-  const handleFile = useCallback(
-    async (file: File) => {
-      const lower = file.name.toLowerCase();
-      if (!lower.endsWith(".pdf") && !lower.endsWith(".docx")) {
-        setResumeError("Unsupported file type — upload a PDF or DOCX resume.");
-        return;
-      }
-      if (file.size > MAX_BYTES) {
-        setResumeError("File too large — maximum resume size is 5MB.");
-        return;
-      }
-      setResumeError("");
-      try {
-        const text = await onExtract(file);
-        setResumeText(text);
-        setFileName(file.name);
-        toast.success("Resume uploaded", { description: file.name });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Please try another file.";
-        setResumeText("");
-        setFileName("");
-        setResumeError(message);
-        toast.error("Could not read resume", { description: message });
-      }
-    },
-    [onExtract],
-  );
 
   const resolvedRole = role === OTHER_ROLE ? customRole.trim() : role;
   const canSubmit = Boolean(resumeText && field && resolvedRole) && !submitting && !extracting;
