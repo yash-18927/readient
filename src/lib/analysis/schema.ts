@@ -119,17 +119,8 @@ export const analysisResultSchema = z.object({
     behavioral: stringList,
     portfolio: stringList,
   }),
-  project_suggestions: z
-    .array(
-      z.object({
-        name: z.string(),
-        description: z.string(),
-        skills: stringList,
-        difficulty: z.string(),
-        estimated_time: z.string(),
-      }),
-    )
-    .default([]),
+  project_suggestions: z.array(projectSuggestion).default([]),
+
 });
 
 export type AnalysisResult = z.infer<typeof analysisResultSchema>;
