@@ -113,6 +113,8 @@ function ApplyPage() {
           links: {
             ...(github.trim() ? { github: github.trim() } : {}),
             ...(portfolio.trim() ? { portfolio: portfolio.trim() } : {}),
+            ...(linkedin.trim() ? { linkedin: linkedin.trim() } : {}),
+
           },
           resumeText,
           resumeFileName: fileName,
