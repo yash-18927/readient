@@ -127,3 +127,33 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     return { score, result, jobTitle: job.title };
   });
+
+export type ApplicantRank = {
+  rank: number;
+  total: number;
+  topName: string | null;
+  topScore: number | null;
+};
+
+/** Rank of one submitted score among all applicants for a shared job link. */
+export const getApplicantRank = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) =>
+    z.object({ slug: z.string().min(8).max(64), score: z.number().int().min(0).max(100) }).parse(data),
+  )
+  .handler(async ({ data }): Promise<ApplicantRank> => {
+    const { createPublicClient } = await import("@/lib/jobs/public-client.server");
+    const supabase = createPublicClient();
+    const { data: rows, error } = await supabase.rpc("public_job_rank", {
+      _slug: data.slug,
+      _score: data.score,
+    });
+    if (error) throw new Error(error.message);
+    const row = rows?.[0];
+    if (!row) throw new Error("Standings are not available for this job.");
+    return {
+      rank: row.rank ?? 1,
+      total: row.total ?? 1,
+      topName: row.top_name ?? null,
+      topScore: row.top_score ?? null,
+    };
+  });
