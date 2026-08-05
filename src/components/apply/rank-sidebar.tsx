@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronRight, Trophy } from "lucide-react";
-import { getApplicantRank, type ApplicantRank } from "@/lib/public-jobs.functions";
+import { ChevronRight } from "lucide-react";
+import { getJobStandings, type StandingRow } from "@/lib/public-jobs.functions";
 import { cn } from "@/lib/utils";
 
 const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
@@ -22,27 +22,40 @@ function ordinal(n: number) {
 }
 
 /**
- * Lightweight, collapsible standings panel shown to an anonymous candidate
- * after they submit on a shared job link. Collapsed by default.
+ * Collapsible standings panel for an anonymous candidate on a shared job link.
+ * Shows the full applicant list; on open it smooth-scrolls the student's own
+ * row into the middle of the viewport.
  */
 export function RankSidebar({ slug, score }: { slug: string; score: number }) {
-  const rankFn = useServerFn(getApplicantRank);
+  const standingsFn = useServerFn(getJobStandings);
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState<ApplicantRank | null>(null);
+  const [rows, setRows] = useState<StandingRow[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const ownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let active = true;
-    rankFn({ data: { slug, score } })
-      .then((res) => active && setData(res))
+    standingsFn({ data: { slug } })
+      .then((res) => active && setRows(res.rows))
       .catch(() => active && setFailed(true));
     return () => {
       active = false;
     };
-  }, [rankFn, slug, score]);
+  }, [standingsFn, slug]);
+
+  const ownRank = rows ? rows.filter((r) => r.score > score).length + 1 : null;
+
+  useEffect(() => {
+    if (!open || !rows || !ownRef.current) return;
+    const id = window.setTimeout(() => {
+      ownRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 320);
+    return () => window.clearTimeout(id);
+  }, [open, rows]);
 
   return (
-    <aside className="fixed right-0 top-1/3 z-30 flex items-start">
+    <aside className="fixed right-0 top-1/4 z-30 flex items-start">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -60,38 +73,50 @@ export function RankSidebar({ slug, score }: { slug: string; score: number }) {
       <div
         className={cn(
           "overflow-hidden border-y border-l border-border bg-background transition-all duration-300",
-          open ? "w-60 px-5 py-4 opacity-100" : "w-0 border-0 px-0 py-0 opacity-0",
+          open ? "w-64 px-5 py-4 opacity-100" : "w-0 border-0 px-0 py-0 opacity-0",
         )}
       >
-        {failed || !data ? (
+        {failed || !rows ? (
           <p className="whitespace-nowrap text-xs text-muted-foreground">
             {failed ? "Standings unavailable." : "Loading…"}
           </p>
         ) : (
-          <div className="space-y-4">
-            <div>
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between whitespace-nowrap">
               <p className="text-[0.6rem] tracking-[0.18em] text-muted-foreground" style={MONO}>
-                YOUR RANK
+                ALL APPLICANTS
               </p>
-              <p className="mt-1 text-2xl font-light tabular-nums text-foreground">
-                {ordinal(data.rank)}
-                <span className="ml-2 text-sm text-muted-foreground">of {data.total}</span>
-              </p>
+              {ownRank && (
+                <p className="text-xs tabular-nums text-muted-foreground">
+                  You: {ordinal(ownRank)} of {rows.length}
+                </p>
+              )}
             </div>
-            {data.topName && (
-              <div className="border-t border-border pt-3">
-                <p className="text-[0.6rem] tracking-[0.18em] text-muted-foreground" style={MONO}>
-                  TOP APPLICANT
-                </p>
-                <p className="mt-1 flex items-center gap-2 text-sm text-foreground">
-                  <Trophy className="size-3.5 text-primary" />
-                  <span className="truncate">{data.topName}</span>
-                </p>
-                <p className="mt-1 text-xs tabular-nums text-muted-foreground">
-                  Score {data.topScore}
-                </p>
-              </div>
-            )}
+
+            <div
+              ref={listRef}
+              className="max-h-[50vh] overflow-y-auto border-t border-border pt-2"
+            >
+              {rows.map((row) => {
+                const isOwn = row.rank === ownRank;
+                return (
+                  <div
+                    key={`${row.rank}-${row.name}`}
+                    ref={isOwn ? ownRef : undefined}
+                    className={cn(
+                      "flex items-center gap-3 rounded px-2 py-1.5 text-sm",
+                      isOwn ? "bg-primary/10 text-foreground" : "text-muted-foreground",
+                    )}
+                  >
+                    <span className="w-6 shrink-0 text-right text-xs tabular-nums" style={MONO}>
+                      {row.rank}
+                    </span>
+                    <span className="flex-1 truncate">{isOwn ? "You" : row.name}</span>
+                    <span className="shrink-0 tabular-nums">{row.score}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
