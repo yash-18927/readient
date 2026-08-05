@@ -356,6 +356,28 @@ function parseHeaderBlock(head: string[], contactLines: string[]): LinkedInProfi
   };
 }
 
+const NAME_LINE = /^[A-Z][\p{L}.'-]+(?: [A-Z][\p{L}.'-]+){1,3}$/u;
+
+/**
+ * LinkedIn's PDF is two-column, so the name/headline/location block often lands
+ * inside a sidebar section instead of at the top of the extracted text.
+ */
+function parseHeaderFallback(
+  sections: Map<string, string[]>,
+  contactLines: string[],
+): LinkedInProfile | null {
+  const lines = Array.from(sections.values()).flat();
+  for (let i = 0; i < lines.length - 2; i++) {
+    const name = lines[i]!;
+    if (!NAME_LINE.test(name)) continue;
+    const headline = lines[i + 1]!;
+    const location = lines[i + 2]!;
+    if (!location.includes(",")) continue;
+    return parseHeaderBlock([name, headline, location], contactLines);
+  }
+  return null;
+}
+
 function parsePdfExperience(lines: string[]): LinkedInPosition[] {
   const positions: LinkedInPosition[] = [];
   let company: string | undefined;
@@ -433,7 +455,8 @@ export async function parseLinkedInPdf(base64: string): Promise<LinkedInExport> 
   const { head, sections } = splitPdfSections(text);
   const get = (key: string) => sections.get(key) ?? [];
 
-  const profile = parseHeaderBlock(head, get("contact"));
+  const profile =
+    parseHeaderBlock(head, get("contact")) ?? parseHeaderFallback(sections, get("contact"));
   const skills = Array.from(new Set(get("top skills").map((s) => s.trim()).filter(Boolean)));
   const certifications = get("certifications").map((c) => c.trim()).filter(Boolean);
   const positions = parsePdfExperience(get("experience"));
