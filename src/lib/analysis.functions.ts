@@ -54,8 +54,10 @@ export const analyzeResume = createServerFn({ method: "POST" })
     );
     const { runAnalysisModel, AnalysisError } = await import("@/lib/analysis/ai.server");
     const { analysisResultSchema } = await import("@/lib/analysis/schema");
-    const { createSupabaseAdminClient } = await import("@/integrations/supabase/client.server");
-    const supabaseAdmin = createSupabaseAdminClient();
+    const hasAdminBinding = Boolean(process.env["SUPABASE_SERVICE_ROLE_KEY"]);
+    const supabaseAdmin = hasAdminBinding
+      ? (await import("@/integrations/supabase/client.server")).createSupabaseAdminClient()
+      : null;
 
     // Cheap guard so invalid uploads never burn AI credits.
     try {
@@ -74,11 +76,13 @@ export const analyzeResume = createServerFn({ method: "POST" })
     let result: AnalysisResult | null = null;
     let model = "cache";
 
-    const cached = await supabaseAdmin
-      .from("analysis_cache")
-      .select("result")
-      .eq("cache_key", cacheKey)
-      .maybeSingle();
+    const cached = supabaseAdmin
+      ? await supabaseAdmin
+          .from("analysis_cache")
+          .select("result")
+          .eq("cache_key", cacheKey)
+          .maybeSingle()
+      : { data: null };
 
     if (cached.data?.result) {
       const parsed = analysisResultSchema.safeParse(cached.data.result);
@@ -100,7 +104,9 @@ export const analyzeResume = createServerFn({ method: "POST" })
         if (error instanceof AnalysisError) throw new Error(error.message);
         throw error;
       }
-      await supabaseAdmin.from("analysis_cache").upsert({ cache_key: cacheKey, result });
+      if (supabaseAdmin) {
+        await supabaseAdmin.from("analysis_cache").upsert({ cache_key: cacheKey, result });
+      }
     }
 
     const { data: inserted, error } = await context.supabase
@@ -122,14 +128,16 @@ export const analyzeResume = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
-    await supabaseAdmin.from("analysis_logs").insert({
-      user_id: context.userId,
-      session_id: inserted.id,
-      field: data.field,
-      target_role: data.targetRole,
-      overall_score: Math.round(result.overall_score),
-      model,
-    });
+    if (supabaseAdmin) {
+      await supabaseAdmin.from("analysis_logs").insert({
+        user_id: context.userId,
+        session_id: inserted.id,
+        field: data.field,
+        target_role: data.targetRole,
+        overall_score: Math.round(result.overall_score),
+        model,
+      });
+    }
 
     return inserted as unknown as AnalysisRecord;
   });
