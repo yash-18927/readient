@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { UploadDropzone } from "@/components/upload-dropzone";
-import { toast } from "sonner";
+import { CombinedUpload } from "@/components/analysis/combined-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,6 @@ import {
 } from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
-import { LinkedInUpload } from "@/components/linkedin-upload";
 import {
   EVIDENCE_LABELS,
   FIELDS,
@@ -34,7 +32,6 @@ export type ResumeFormValues = {
   resumeFileName?: string;
 };
 
-const MAX_BYTES = 5 * 1024 * 1024;
 
 const MONO = { fontFamily: "ui-monospace, SFMono-Regular, monospace" } as const;
 
@@ -79,7 +76,6 @@ export function ResumeForm({
   const [evidence, setEvidence] = useState<Record<string, string>>(prefill?.evidence ?? {});
   const [resumeText, setResumeText] = useState(prefill?.resumeText ?? "");
   const [fileName, setFileName] = useState(prefill?.resumeFileName ?? "");
-  const [resumeError, setResumeError] = useState("");
 
   useEffect(() => {
     if (!prefill) return;
@@ -96,33 +92,6 @@ export function ResumeForm({
   const roles = useMemo(() => (field ? rolesForField(field) : []), [field]);
   const evidenceKeys: EvidenceKey[] = useMemo(() => (field ? evidenceForField(field) : []), [field]);
 
-  const handleFile = useCallback(
-    async (file: File) => {
-      const lower = file.name.toLowerCase();
-      if (!lower.endsWith(".pdf") && !lower.endsWith(".docx")) {
-        setResumeError("Unsupported file type — upload a PDF or DOCX resume.");
-        return;
-      }
-      if (file.size > MAX_BYTES) {
-        setResumeError("File too large — maximum resume size is 5MB.");
-        return;
-      }
-      setResumeError("");
-      try {
-        const text = await onExtract(file);
-        setResumeText(text);
-        setFileName(file.name);
-        toast.success("Resume uploaded", { description: file.name });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Please try another file.";
-        setResumeText("");
-        setFileName("");
-        setResumeError(message);
-        toast.error("Could not read resume", { description: message });
-      }
-    },
-    [onExtract],
-  );
 
   const resolvedRole = role === OTHER_ROLE ? customRole.trim() : role;
   const canSubmit = Boolean(resumeText && field && resolvedRole) && !submitting && !extracting;
@@ -145,25 +114,21 @@ export function ResumeForm({
         });
       }}
     >
-      <Section index="01" title="Your resume">
-        <UploadDropzone
-          size="lg"
-          accept=".pdf,.docx"
-          filled={Boolean(resumeText)}
-          fileName={fileName || "Resume text"}
-          fileMeta={`${resumeText.length.toLocaleString()} characters extracted`}
-          clearLabel="Remove resume"
-          pending={extracting}
-          pendingLabel="Reading your resume…"
-          idleLabel="Drag & drop your resume, or click to browse"
-          hint="PDF or DOCX · max 5MB"
-          error={resumeError}
-          onFile={(file) => void handleFile(file)}
-          onClear={() => {
-            setResumeText("");
-            setFileName("");
-            setResumeError("");
+      <Section index="01" title="Your resume & LinkedIn data">
+        <CombinedUpload
+          resumeText={resumeText}
+          resumeFileName={fileName}
+          extracting={extracting}
+          onExtract={onExtract}
+          onResumeChange={(text, name) => {
+            setResumeText(text);
+            setFileName(name);
           }}
+          linkedinValue={evidence["linkedin"] ?? ""}
+          onLinkedInParsed={(data) =>
+            setEvidence((prev) => ({ ...prev, linkedin: data.summary }))
+          }
+          onLinkedInClear={() => setEvidence((prev) => ({ ...prev, linkedin: "" }))}
         />
       </Section>
 
@@ -236,44 +201,37 @@ export function ResumeForm({
       </Section>
 
 
-      {evidenceKeys.length > 0 && (
+      {evidenceKeys.filter((k) => k !== "linkedin").length > 0 && (
         <Section index="03" title="Evidence of competence (optional)">
           <div className="grid gap-4 sm:grid-cols-2">
-            {evidenceKeys.map((key) => {
-              const meta = EVIDENCE_LABELS[key];
-              return (
-                <div key={key} className={cn("space-y-2", meta.multiline && "sm:col-span-2")}>
-                  <Label htmlFor={`ev-${key}`}>{meta.label}</Label>
-                  {key === "linkedin" ? (
-                    <LinkedInUpload
-                      value={evidence[key] ?? ""}
-                      onParsed={(data) =>
-                        setEvidence((prev) => ({ ...prev, linkedin: data.summary }))
-                      }
-                      onClear={() => setEvidence((prev) => ({ ...prev, linkedin: "" }))}
-                    />
-                  ) : meta.multiline ? (
-                    <Textarea
-                      id={`ev-${key}`}
-                      rows={3}
-                      value={evidence[key] ?? ""}
-                      placeholder={meta.placeholder}
-                      onChange={(e) => setEvidence((prev) => ({ ...prev, [key]: e.target.value }))}
-                    />
-                  ) : (
-                    <Input
-                      id={`ev-${key}`}
-                      value={evidence[key] ?? ""}
-                      placeholder={meta.placeholder}
-                      onChange={(e) => setEvidence((prev) => ({ ...prev, [key]: e.target.value }))}
-                    />
-                  )}
-                </div>
-              );
-            })}
+            {evidenceKeys
+              .filter((key) => key !== "linkedin")
+              .map((key) => {
+                const meta = EVIDENCE_LABELS[key];
+                return (
+                  <div key={key} className={cn("space-y-2", meta.multiline && "sm:col-span-2")}>
+                    <Label htmlFor={`ev-${key}`}>{meta.label}</Label>
+                    {meta.multiline ? (
+                      <Textarea
+                        id={`ev-${key}`}
+                        rows={3}
+                        value={evidence[key] ?? ""}
+                        placeholder={meta.placeholder}
+                        onChange={(e) => setEvidence((prev) => ({ ...prev, [key]: e.target.value }))}
+                      />
+                    ) : (
+                      <Input
+                        id={`ev-${key}`}
+                        value={evidence[key] ?? ""}
+                        placeholder={meta.placeholder}
+                        onChange={(e) => setEvidence((prev) => ({ ...prev, [key]: e.target.value }))}
+                      />
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </Section>
-
       )}
 
       <div className="flex justify-end">
