@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/select";
 
 import { cn } from "@/lib/utils";
+import { LinkedInDropzone } from "@/components/analysis/linkedin-dropzone";
+
 import {
   EVIDENCE_LABELS,
   FIELDS,
