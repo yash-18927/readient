@@ -23,6 +23,23 @@ function toBase64(file: File): Promise<string> {
   });
 }
 
+function StatusCheck({ done, label, note }: { done: boolean; label: string; note: string }) {
+  return (
+    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <span
+        className={cn(
+          "flex size-3.5 items-center justify-center rounded-[3px] border transition-colors",
+          done ? "border-primary bg-primary/15 text-primary" : "border-border",
+        )}
+      >
+        {done && <Check className="size-2.5" strokeWidth={3} />}
+      </span>
+      <span className={cn(done && "text-foreground")}>{label}</span>
+      <span className="opacity-60">({note})</span>
+    </span>
+  );
+}
+
 export function CombinedUpload({
   resumeText,
   resumeFileName,
