@@ -88,7 +88,19 @@ export const submitApplication = createServerFn({ method: "POST" })
     }
 
     const requirements = jobRequirementsSchema.parse(job.structured_requirements ?? {});
-    const rubric = jobRubricSchema.parse(job.rubric ?? { pillar_weights: {} });
+
+    // The rubric is deliberately absent from `public_job_by_slug` so an anon
+    // caller with a share_slug can never read it. Scoring still needs it, so
+    // read it here through the service-role client after the slug has already
+    // resolved to an open job. The rubric is used only to build the prompt and
+    // is never returned to the candidate.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rubricRow } = await supabaseAdmin
+      .from("jobs")
+      .select("rubric")
+      .eq("id", job.id)
+      .maybeSingle();
+    const rubric = jobRubricSchema.parse(rubricRow?.rubric ?? { pillar_weights: {} });
 
     const links = {
       ...data.links,

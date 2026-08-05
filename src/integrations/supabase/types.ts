@@ -244,7 +244,6 @@ export type Database = {
           company: string
           deadline: string
           id: string
-          rubric: Json
           status: string
           structured_requirements: Json
           title: string
