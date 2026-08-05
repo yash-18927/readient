@@ -261,8 +261,7 @@ export async function verifyPortfolio(urlRaw: string): Promise<VerifyResult> {
     const title =
       metaTag(html, "property", "og:title") ??
       metaTag(html, "name", "twitter:title") ??
-      decodeEntities(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? "") ||
-      undefined;
+      (decodeEntities(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? "") || undefined);
     const description =
       metaTag(html, "property", "og:description") ??
       metaTag(html, "name", "description") ??
