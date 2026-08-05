@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { AnalysisResult } from "@/lib/analysis/schema";
 import {
   jobRequirementsSchema,
+  jobRubricSchema,
   isJobAcceptingSubmissions,
   type JobRequirements,
 } from "@/lib/jobs/schema";
@@ -90,7 +91,7 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     // The private rubric is not readable through the anonymous RLS client.
     // Use the scorer's neutral default rather than requiring service-role access.
-    const rubric = { pillar_weights: {} };
+    const rubric = jobRubricSchema.parse({ pillar_weights: {} });
 
     const links = {
       ...data.links,
