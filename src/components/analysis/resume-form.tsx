@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { CombinedUpload } from "@/components/analysis/combined-upload";
+import { VerifiedEvidenceInput } from "@/components/analysis/verified-evidence-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
