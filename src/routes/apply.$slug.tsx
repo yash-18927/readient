@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CandidateReport } from "@/components/jobs/candidate-report";
+import { LinkedInDropzone } from "@/components/analysis/linkedin-dropzone";
+
 import type { AnalysisResult } from "@/lib/analysis/schema";
 import {
   extractPublicResume,
