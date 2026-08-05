@@ -82,6 +82,8 @@ function ApplyPage() {
   const [email, setEmail] = useState("");
   const [github, setGithub] = useState("");
   const [portfolio, setPortfolio] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+
   const [resumeText, setResumeText] = useState("");
   const [fileName, setFileName] = useState<string | undefined>();
   const [outcome, setOutcome] = useState<{ score: number; result: AnalysisResult } | null>(null);
