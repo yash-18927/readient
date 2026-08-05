@@ -75,6 +75,7 @@ export function ResumeForm({
   const [customRole, setCustomRole] = useState("");
   const [jobDescription, setJobDescription] = useState(prefill?.jobDescription ?? "");
   const [evidence, setEvidence] = useState<Record<string, string>>(prefill?.evidence ?? {});
+  const [raw, setRaw] = useState<Record<string, string>>({});
   const [resumeText, setResumeText] = useState(prefill?.resumeText ?? "");
   const [fileName, setFileName] = useState(prefill?.resumeFileName ?? "");
 
