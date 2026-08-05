@@ -91,72 +91,30 @@ export function LinkedInUpload({
 
   return (
     <div>
-      {value ? (
-        <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed border-primary/50 bg-primary/5 px-4 py-5">
-          <div className="flex min-w-0 items-center gap-3">
-            <CheckCircle2 className="size-5 shrink-0 text-primary" />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{fileName || "LinkedIn export"}</p>
-              <p className="text-xs text-muted-foreground">
-                {meta
-                  ? `${meta.positions} positions · ${meta.skills} skills · ${meta.education} education entries`
-                  : `${value.length.toLocaleString()} characters imported`}
-              </p>
-            </div>
-          </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label="Remove LinkedIn export"
-            onClick={() => {
-              setFileName("");
-              setMeta(null);
-              setError("");
-              onClear();
-            }}
-          >
-            <X className="size-4" />
-          </Button>
-        </div>
-      ) : (
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => inputRef.current?.click()}
-          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && inputRef.current?.click()}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setDragging(false);
-            const file = e.dataTransfer.files?.[0];
-            if (file) handleFile(file);
-          }}
-          className={cn(
-            "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-8 text-center transition-colors",
-            error && "border-destructive/60",
-            dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
-          )}
-        >
-          {upload.isPending ? (
-            <Loader2 className="size-6 animate-spin text-primary" />
-          ) : (
-            <UploadCloud className="size-6 text-muted-foreground" />
-          )}
-          <p className="mt-3 text-sm font-medium">
-            {upload.isPending ? "Reading your export…" : "Drag & drop, or click to browse"}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            LinkedIn export .zip, or a single Profile/Positions/Skills/Education .csv
-          </p>
-        </div>
-      )}
-
-      {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+      <UploadDropzone
+        size="sm"
+        accept=".zip,.csv,application/zip,text/csv"
+        filled={Boolean(value)}
+        fileName={fileName || "LinkedIn export"}
+        fileMeta={
+          meta
+            ? `${meta.positions} positions · ${meta.skills} skills · ${meta.education} education entries`
+            : `${value?.length.toLocaleString() ?? 0} characters imported`
+        }
+        clearLabel="Remove LinkedIn export"
+        pending={upload.isPending}
+        pendingLabel="Reading your export…"
+        idleLabel="Drag & drop, or click to browse"
+        hint="LinkedIn export .zip, or a single Profile/Positions/Skills/Education .csv"
+        error={error}
+        onFile={handleFile}
+        onClear={() => {
+          setFileName("");
+          setMeta(null);
+          setError("");
+          onClear();
+        }}
+      />
 
       <p className="mt-2 text-xs text-muted-foreground">
         Get it from LinkedIn ›{" "}
@@ -170,17 +128,6 @@ export function LinkedInUpload({
         </a>
         . Only Profile, Positions, Skills and Education are read; other files are ignored.
       </p>
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".zip,.csv,application/zip,text/csv"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleFile(file);
-          e.target.value = "";
-        }}
-      />
     </div>
   );
 }
