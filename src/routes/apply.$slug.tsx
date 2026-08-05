@@ -224,7 +224,7 @@ function ApplyPage() {
                   <Input id="cand-github" value={github} onChange={(e) => setGithub(e.target.value)} maxLength={500} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cand-portfolio">Portfolio / LinkedIn (optional)</Label>
+                  <Label htmlFor="cand-portfolio">Portfolio (optional)</Label>
                   <Input
                     id="cand-portfolio"
                     value={portfolio}
@@ -233,6 +233,12 @@ function ApplyPage() {
                   />
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label>LinkedIn export (optional)</Label>
+                <LinkedInDropzone value={linkedin} onChange={setLinkedin} />
+              </div>
+
 
               <div className="space-y-2">
                 <Label htmlFor="cand-file">Resume (PDF, DOCX or TXT)</Label>
