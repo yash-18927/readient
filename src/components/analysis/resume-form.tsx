@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Loader2, FileText, UploadCloud, X } from "lucide-react";
+import { CheckCircle2, Loader2, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,6 +78,7 @@ export function ResumeForm({
   const [evidence, setEvidence] = useState<Record<string, string>>(prefill?.evidence ?? {});
   const [resumeText, setResumeText] = useState(prefill?.resumeText ?? "");
   const [fileName, setFileName] = useState(prefill?.resumeFileName ?? "");
+  const [resumeError, setResumeError] = useState("");
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -100,22 +101,25 @@ export function ResumeForm({
     async (file: File) => {
       const lower = file.name.toLowerCase();
       if (!lower.endsWith(".pdf") && !lower.endsWith(".docx")) {
-        toast.error("Unsupported file type", { description: "Upload a PDF or DOCX resume." });
+        setResumeError("Unsupported file type — upload a PDF or DOCX resume.");
         return;
       }
       if (file.size > MAX_BYTES) {
-        toast.error("File too large", { description: "Maximum resume size is 5MB." });
+        setResumeError("File too large — maximum resume size is 5MB.");
         return;
       }
+      setResumeError("");
       try {
         const text = await onExtract(file);
         setResumeText(text);
         setFileName(file.name);
-        toast.success("Resume text extracted");
+        toast.success("Resume uploaded", { description: file.name });
       } catch (error) {
-        toast.error("Could not read resume", {
-          description: error instanceof Error ? error.message : "Please try another file.",
-        });
+        const message = error instanceof Error ? error.message : "Please try another file.";
+        setResumeText("");
+        setFileName("");
+        setResumeError(message);
+        toast.error("Could not read resume", { description: message });
       }
     },
     [onExtract],
@@ -146,9 +150,9 @@ export function ResumeForm({
         <div>
 
           {resumeText ? (
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-transparent px-4 py-3">
+            <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed border-primary/50 bg-primary/5 px-6 py-8">
               <div className="flex min-w-0 items-center gap-3">
-                <FileText className="size-5 shrink-0 text-primary" />
+                <CheckCircle2 className="size-6 shrink-0 text-primary" />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{fileName || "Resume text"}</p>
                   <p className="text-xs text-muted-foreground">
@@ -164,6 +168,7 @@ export function ResumeForm({
                 onClick={() => {
                   setResumeText("");
                   setFileName("");
+                  setResumeError("");
                 }}
               >
                 <X className="size-4" />
@@ -188,9 +193,11 @@ export function ResumeForm({
               }}
               className={cn(
                 "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-14 text-center transition-colors",
+                resumeError && "border-destructive/60",
                 dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
               )}
             >
+
               {extracting ? (
                 <Loader2 className="size-7 animate-spin text-primary" />
               ) : (
@@ -202,6 +209,8 @@ export function ResumeForm({
               <p className="mt-1 text-xs text-muted-foreground">PDF or DOCX · max 5MB</p>
             </div>
           )}
+          {resumeError && <p className="mt-2 text-xs text-destructive">{resumeError}</p>}
+
           <input
             ref={inputRef}
             type="file"

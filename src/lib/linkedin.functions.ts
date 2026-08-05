@@ -21,14 +21,19 @@ export const parseLinkedInExport = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data }): Promise<LinkedInImport> => {
-    if (!data.fileName.toLowerCase().endsWith(".zip")) {
+    const lower = data.fileName.toLowerCase();
+    const isZip = lower.endsWith(".zip");
+    const isCsv = lower.endsWith(".csv");
+    if (!isZip && !isCsv) {
       throw new Error(
-        "This doesn't look like a LinkedIn data export — please upload the zip file from LinkedIn's 'Get a copy of your data' feature.",
+        "This doesn't look like a LinkedIn data export — upload the .zip from LinkedIn's 'Get a copy of your data', or a single Profile/Positions/Skills/Education CSV.",
       );
     }
-    const { parseLinkedInZip, LinkedInExportError } = await import("@/lib/linkedin/parse.server");
+    const { parseLinkedInZip, parseLinkedInCsv, LinkedInExportError } = await import(
+      "@/lib/linkedin/parse.server"
+    );
     try {
-      const parsed = parseLinkedInZip(data.base64);
+      const parsed = isZip ? parseLinkedInZip(data.base64) : parseLinkedInCsv(data.base64);
       return {
         summary: parsed.summary,
         filesFound: parsed.filesFound,
@@ -43,3 +48,4 @@ export const parseLinkedInExport = createServerFn({ method: "POST" })
       throw new Error("We could not read that LinkedIn export. Please try downloading it again.");
     }
   });
+

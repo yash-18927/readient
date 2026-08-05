@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { FileArchive, Loader2, UploadCloud, X } from "lucide-react";
+import { CheckCircle2, Loader2, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,7 @@ export function LinkedInUpload({
   const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState("");
   const [meta, setMeta] = useState<LinkedInImport | null>(null);
+  const [error, setError] = useState("");
 
   const upload = useMutation({
     mutationFn: async (file: File) => {
@@ -49,107 +50,114 @@ export function LinkedInUpload({
       return parseFn({ data: { fileName: file.name, base64 } });
     },
     onSuccess: (data, file) => {
+      setError("");
       setFileName(file.name);
       setMeta(data);
       onParsed(data);
-      toast.success("LinkedIn export imported", {
+      toast.success("LinkedIn data imported", {
         description: data.filesMissing.length
-          ? `Missing from your export: ${data.filesMissing
-              .map((f) => FILE_LABELS[f] ?? f)
-              .join(", ")} — we used everything else.`
+          ? `Read: ${data.filesFound.map((f) => FILE_LABELS[f] ?? f).join(", ")}.`
           : "Profile, positions, skills and education were read.",
       });
     },
-    onError: (error) =>
-      toast.error("Could not import that file", {
-        description: error instanceof Error ? error.message : "Please try again.",
-      }),
+    onError: (err) => {
+      const message = err instanceof Error ? err.message : "Please try again.";
+      setError(message);
+      setFileName("");
+      setMeta(null);
+      onClear();
+      toast.error("Could not import that file", { description: message });
+    },
   });
 
   const handleFile = useCallback(
     (file: File) => {
-      if (!file.name.toLowerCase().endsWith(".zip")) {
-        toast.error("Unsupported file type", {
-          description:
-            "This doesn't look like a LinkedIn data export — please upload the zip file from LinkedIn's 'Get a copy of your data' feature.",
-        });
+      const lower = file.name.toLowerCase();
+      if (!lower.endsWith(".zip") && !lower.endsWith(".csv")) {
+        setError(
+          "Unsupported file — upload your LinkedIn data export .zip, or a single Profile/Positions/Skills/Education CSV.",
+        );
         return;
       }
       if (file.size > MAX_BYTES) {
-        toast.error("File too large", { description: "Maximum export size is 10MB." });
+        setError("File too large — maximum export size is 10MB.");
         return;
       }
+      setError("");
       upload.mutate(file);
     },
     [upload],
   );
 
-  if (value) {
-    return (
-      <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-transparent px-4 py-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <FileArchive className="size-5 shrink-0 text-primary" />
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{fileName || "LinkedIn export"}</p>
-            <p className="text-xs text-muted-foreground">
-              {meta
-                ? `${meta.positions} positions · ${meta.skills} skills · ${meta.education} education entries`
-                : `${value.length.toLocaleString()} characters imported`}
-            </p>
-          </div>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label="Remove LinkedIn export"
-          onClick={() => {
-            setFileName("");
-            setMeta(null);
-            onClear();
-          }}
-        >
-          <X className="size-4" />
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div>
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={() => inputRef.current?.click()}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && inputRef.current?.click()}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDragging(false);
-          const file = e.dataTransfer.files?.[0];
-          if (file) handleFile(file);
-        }}
-        className={cn(
-          "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-10 text-center transition-colors",
-          dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
-        )}
-      >
-        {upload.isPending ? (
-          <Loader2 className="size-6 animate-spin text-primary" />
-        ) : (
-          <UploadCloud className="size-6 text-muted-foreground" />
-        )}
-        <p className="mt-3 text-sm font-medium">
-          {upload.isPending ? "Reading your export…" : "Drop your LinkedIn data export (.zip)"}
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Upload the .zip file from LinkedIn's "Get a copy of your data" export.
-        </p>
-      </div>
+      {value ? (
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed border-primary/50 bg-primary/5 px-4 py-5">
+          <div className="flex min-w-0 items-center gap-3">
+            <CheckCircle2 className="size-5 shrink-0 text-primary" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">{fileName || "LinkedIn export"}</p>
+              <p className="text-xs text-muted-foreground">
+                {meta
+                  ? `${meta.positions} positions · ${meta.skills} skills · ${meta.education} education entries`
+                  : `${value.length.toLocaleString()} characters imported`}
+              </p>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Remove LinkedIn export"
+            onClick={() => {
+              setFileName("");
+              setMeta(null);
+              setError("");
+              onClear();
+            }}
+          >
+            <X className="size-4" />
+          </Button>
+        </div>
+      ) : (
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => inputRef.current?.click()}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && inputRef.current?.click()}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            const file = e.dataTransfer.files?.[0];
+            if (file) handleFile(file);
+          }}
+          className={cn(
+            "flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-6 py-8 text-center transition-colors",
+            error && "border-destructive/60",
+            dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
+          )}
+        >
+          {upload.isPending ? (
+            <Loader2 className="size-6 animate-spin text-primary" />
+          ) : (
+            <UploadCloud className="size-6 text-muted-foreground" />
+          )}
+          <p className="mt-3 text-sm font-medium">
+            {upload.isPending ? "Reading your export…" : "Drag & drop, or click to browse"}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            LinkedIn export .zip, or a single Profile/Positions/Skills/Education .csv
+          </p>
+        </div>
+      )}
+
+      {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+
       <p className="mt-2 text-xs text-muted-foreground">
         Get it from LinkedIn ›{" "}
         <a
@@ -165,7 +173,7 @@ export function LinkedInUpload({
       <input
         ref={inputRef}
         type="file"
-        accept=".zip,application/zip"
+        accept=".zip,.csv,application/zip,text/csv"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
@@ -176,3 +184,4 @@ export function LinkedInUpload({
     </div>
   );
 }
+
