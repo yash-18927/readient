@@ -145,25 +145,21 @@ export function ResumeForm({
         });
       }}
     >
-      <Section index="01" title="Your resume">
-        <UploadDropzone
-          size="lg"
-          accept=".pdf,.docx"
-          filled={Boolean(resumeText)}
-          fileName={fileName || "Resume text"}
-          fileMeta={`${resumeText.length.toLocaleString()} characters extracted`}
-          clearLabel="Remove resume"
-          pending={extracting}
-          pendingLabel="Reading your resume…"
-          idleLabel="Drag & drop your resume, or click to browse"
-          hint="PDF or DOCX · max 5MB"
-          error={resumeError}
-          onFile={(file) => void handleFile(file)}
-          onClear={() => {
-            setResumeText("");
-            setFileName("");
-            setResumeError("");
+      <Section index="01" title="Your resume & LinkedIn data">
+        <CombinedUpload
+          resumeText={resumeText}
+          resumeFileName={fileName}
+          extracting={extracting}
+          onExtract={onExtract}
+          onResumeChange={(text, name) => {
+            setResumeText(text);
+            setFileName(name);
           }}
+          linkedinValue={evidence["linkedin"] ?? ""}
+          onLinkedInParsed={(data) =>
+            setEvidence((prev) => ({ ...prev, linkedin: data.summary }))
+          }
+          onLinkedInClear={() => setEvidence((prev) => ({ ...prev, linkedin: "" }))}
         />
       </Section>
 
