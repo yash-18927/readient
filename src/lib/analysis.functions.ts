@@ -53,11 +53,6 @@ export const analyzeResume = createServerFn({ method: "POST" })
       "@/lib/analysis/extract.server"
     );
     const { runAnalysisModel, AnalysisError } = await import("@/lib/analysis/ai.server");
-    const { analysisResultSchema } = await import("@/lib/analysis/schema");
-    const hasAdminBinding = Boolean(process.env["SUPABASE_SERVICE_ROLE_KEY"]);
-    const supabaseAdmin = hasAdminBinding
-      ? (await import("@/integrations/supabase/client.server")).createSupabaseAdminClient()
-      : null;
 
     // Cheap guard so invalid uploads never burn AI credits.
     try {
@@ -69,44 +64,19 @@ export const analyzeResume = createServerFn({ method: "POST" })
 
 
     const resumeHash = await hashKey(data.resumeText);
-    const cacheKey = await hashKey(
-      [data.resumeText, data.field, data.targetRole, data.jobDescription ?? "", JSON.stringify(data.evidence)].join("::"),
-    );
-
-    let result: AnalysisResult | null = null;
-    let model = "cache";
-
-    const cached = supabaseAdmin
-      ? await supabaseAdmin
-          .from("analysis_cache")
-          .select("result")
-          .eq("cache_key", cacheKey)
-          .maybeSingle()
-      : { data: null };
-
-    if (cached.data?.result) {
-      const parsed = analysisResultSchema.safeParse(cached.data.result);
-      if (parsed.success) result = parsed.data;
-    }
-
-    if (!result) {
-      try {
-        const fresh = await runAnalysisModel({
-          field: data.field,
-          targetRole: data.targetRole,
-          jobDescription: data.jobDescription,
-          evidence: data.evidence,
-          resumeText: data.resumeText,
-        });
-        result = fresh.result;
-        model = fresh.model;
-      } catch (error) {
-        if (error instanceof AnalysisError) throw new Error(error.message);
-        throw error;
-      }
-      if (supabaseAdmin) {
-        await supabaseAdmin.from("analysis_cache").upsert({ cache_key: cacheKey, result });
-      }
+    let result: AnalysisResult;
+    try {
+      const fresh = await runAnalysisModel({
+        field: data.field,
+        targetRole: data.targetRole,
+        jobDescription: data.jobDescription,
+        evidence: data.evidence,
+        resumeText: data.resumeText,
+      });
+      result = fresh.result;
+    } catch (error) {
+      if (error instanceof AnalysisError) throw new Error(error.message);
+      throw error;
     }
 
     const { data: inserted, error } = await context.supabase
@@ -127,17 +97,6 @@ export const analyzeResume = createServerFn({ method: "POST" })
       .single();
 
     if (error) throw new Error(error.message);
-
-    if (supabaseAdmin) {
-      await supabaseAdmin.from("analysis_logs").insert({
-        user_id: context.userId,
-        session_id: inserted.id,
-        field: data.field,
-        target_role: data.targetRole,
-        overall_score: Math.round(result.overall_score),
-        model,
-      });
-    }
 
     return inserted as unknown as AnalysisRecord;
   });

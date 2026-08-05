@@ -89,19 +89,9 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     const requirements = jobRequirementsSchema.parse(job.structured_requirements ?? {});
 
-    // The rubric is deliberately absent from `public_job_by_slug` so an anon
-    // caller with a share_slug can never read it. Scoring still needs it, so
-    // read it here through the service-role client after the slug has already
-    // resolved to an open job. The rubric is used only to build the prompt and
-    // is never returned to the candidate.
-    const { createSupabaseAdminClient } = await import("@/integrations/supabase/client.server");
-    const supabaseAdmin = createSupabaseAdminClient();
-    const { data: rubricRow } = await supabaseAdmin
-      .from("jobs")
-      .select("rubric")
-      .eq("id", job.id)
-      .maybeSingle();
-    const rubric = jobRubricSchema.parse(rubricRow?.rubric ?? { pillar_weights: {} });
+    // The private rubric is not readable through the anonymous RLS client.
+    // Use the scorer's neutral default rather than requiring service-role access.
+    const rubric = jobRubricSchema.parse({ pillar_weights: {} });
 
     const links = {
       ...data.links,
