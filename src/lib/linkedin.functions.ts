@@ -24,16 +24,20 @@ export const parseLinkedInExport = createServerFn({ method: "POST" })
     const lower = data.fileName.toLowerCase();
     const isZip = lower.endsWith(".zip");
     const isCsv = lower.endsWith(".csv");
-    if (!isZip && !isCsv) {
+    const isPdf = lower.endsWith(".pdf");
+    if (!isZip && !isCsv && !isPdf) {
       throw new Error(
-        "This doesn't look like a LinkedIn data export — upload the .zip from LinkedIn's 'Get a copy of your data', or a single Profile/Positions/Skills/Education CSV.",
+        "This doesn't look like LinkedIn data — upload your profile PDF (More › Save to PDF), or the .zip from 'Get a copy of your data'.",
       );
     }
-    const { parseLinkedInZip, parseLinkedInCsv, LinkedInExportError } = await import(
-      "@/lib/linkedin/parse.server"
-    );
+    const { parseLinkedInZip, parseLinkedInCsv, parseLinkedInPdf, LinkedInExportError } =
+      await import("@/lib/linkedin/parse.server");
     try {
-      const parsed = isZip ? parseLinkedInZip(data.base64) : parseLinkedInCsv(data.base64);
+      const parsed = isPdf
+        ? await parseLinkedInPdf(data.base64)
+        : isZip
+          ? parseLinkedInZip(data.base64)
+          : parseLinkedInCsv(data.base64);
       return {
         summary: parsed.summary,
         filesFound: parsed.filesFound,
