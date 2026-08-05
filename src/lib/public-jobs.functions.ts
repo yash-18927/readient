@@ -157,3 +157,22 @@ export const getApplicantRank = createServerFn({ method: "POST" })
       topScore: row.top_score ?? null,
     };
   });
+
+export type StandingRow = { rank: number; name: string; score: number };
+
+/** Full ordered applicant list (name + score only) for a shared job link. */
+export const getJobStandings = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({ slug: z.string().min(8).max(64) }).parse(data))
+  .handler(async ({ data }): Promise<{ rows: StandingRow[] }> => {
+    const { createPublicClient } = await import("@/lib/jobs/public-client.server");
+    const supabase = createPublicClient();
+    const { data: rows, error } = await supabase.rpc("public_job_standings", { _slug: data.slug });
+    if (error) throw new Error(error.message);
+    return {
+      rows: (rows ?? []).map((r: { rank: number; name: string; score: number }) => ({
+        rank: r.rank,
+        name: r.name,
+        score: r.score,
+      })),
+    };
+  });

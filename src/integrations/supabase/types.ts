@@ -259,6 +259,14 @@ export type Database = {
           total: number
         }[]
       }
+      public_job_standings: {
+        Args: { _slug: string }
+        Returns: {
+          name: string
+          rank: number
+          score: number
+        }[]
+      }
     }
     Enums: {
       app_role: "student" | "recruiter"
