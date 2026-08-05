@@ -63,8 +63,44 @@ export async function extractResumeText(fileName: string, base64: string): Promi
       "We could not read enough text from this resume. If it is a scanned document, upload a text-based PDF or DOCX instead.",
     );
   }
+  assertLooksLikeResume(text);
   return text;
 }
+
+const RESUME_SECTIONS = [
+  /\bexperience\b/i,
+  /\bemployment\b/i,
+  /\bwork history\b/i,
+  /\beducation\b/i,
+  /\bskills?\b/i,
+  /\bprojects?\b/i,
+  /\bcertification/i,
+  /\bachievements?\b/i,
+  /\bsummary\b|\bobjective\b|\bprofile\b/i,
+  /\binternship/i,
+];
+
+/**
+ * Cheap structural pre-check so obviously-non-resume uploads never reach the AI call.
+ * Requires contact details and/or several resume-style section headers.
+ */
+export function assertLooksLikeResume(text: string): void {
+  const words = text.trim().split(/\s+/).length;
+  const hasEmail = /[\w.+-]+@[\w-]+\.[a-z]{2,}/i.test(text);
+  const hasPhone = /(\+?\d[\d\s().-]{7,}\d)/.test(text);
+  const hasLink = /(linkedin\.com|github\.com|https?:\/\/)/i.test(text);
+  const sections = RESUME_SECTIONS.filter((re) => re.test(text)).length;
+  const contactSignals = [hasEmail, hasPhone, hasLink].filter(Boolean).length;
+
+  const looksLikeResume = words >= 80 && (sections >= 3 || (contactSignals >= 1 && sections >= 2));
+
+  if (!looksLikeResume) {
+    throw new ExtractionError(
+      "This doesn't look like a resume — please upload a valid resume file.",
+    );
+  }
+}
+
 
 /** Generic document text extraction for recruiter uploads (PDF, DOCX, or plain text). */
 export async function extractDocumentText(fileName: string, base64: string): Promise<string> {
