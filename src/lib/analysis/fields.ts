@@ -12,7 +12,7 @@ export type EvidenceKey =
 
 export const EVIDENCE_LABELS: Record<EvidenceKey, { label: string; placeholder: string; multiline?: boolean }> = {
   github: { label: "GitHub username", placeholder: "octocat" },
-  linkedin: { label: "LinkedIn URL", placeholder: "https://linkedin.com/in/…" },
+  linkedin: { label: "LinkedIn data export", placeholder: "Upload your LinkedIn export (.zip)", multiline: true },
   portfolio: { label: "Portfolio URL", placeholder: "https://yourname.dev" },
   leetcode: { label: "LeetCode username", placeholder: "yourhandle" },
   hackerrank: { label: "HackerRank username", placeholder: "yourhandle" },
