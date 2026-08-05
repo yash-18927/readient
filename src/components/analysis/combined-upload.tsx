@@ -47,6 +47,7 @@ export function CombinedUpload({
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
   const [linkedinFileName, setLinkedinFileName] = useState("");
+  const [linkedinKind, setLinkedinKind] = useState<"pdf" | "zip" | "csv" | null>(null);
   const [probing, setProbing] = useState(false);
   const [meta, setMeta] = useState<LinkedInImport | null>(null);
 
@@ -57,6 +58,7 @@ export function CombinedUpload({
     },
     onSuccess: (data, file) => {
       setError("");
+      setLinkedinKind(file.name.toLowerCase().endsWith(".zip") ? "zip" : "csv");
       setLinkedinFileName(file.name);
       setMeta(data);
       onLinkedInParsed(data);
