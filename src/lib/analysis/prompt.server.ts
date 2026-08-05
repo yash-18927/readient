@@ -1,4 +1,6 @@
 import type { AnalysisInput } from "./schema";
+import { evidenceForField } from "./fields";
+
 
 export const SYSTEM_PROMPT = `You are a senior campus placement advisor and ATS specialist.
 You evaluate student resumes for a specific target role and return a rigorous, honest, evidence-based assessment.
