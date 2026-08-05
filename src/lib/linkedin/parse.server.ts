@@ -373,6 +373,13 @@ function parseHeaderFallback(
     const headline = lines[i + 1]!;
     const location = lines[i + 2]!;
     if (!location.includes(",")) continue;
+    // Remove the header lines so they are not mistaken for sidebar entries.
+    for (const [key, value] of sections) {
+      sections.set(
+        key,
+        value.filter((l) => l !== name && l !== headline && l !== location),
+      );
+    }
     return parseHeaderBlock([name, headline, location], contactLines);
   }
   return null;
