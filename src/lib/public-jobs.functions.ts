@@ -59,7 +59,20 @@ export const extractPublicResume = createServerFn({ method: "POST" })
 const submissionInput = z.object({
   slug: z.string().min(8).max(64),
   candidateName: z.string().trim().max(120).optional(),
-  candidateEmail: z.string().trim().email().max(255).optional().or(z.literal("")),
+  // Optional for anonymous applicants: blank is fine, and validation stays
+  // permissive (a simple local@domain.tld shape) so valid-but-unusual
+  // addresses (plus tags, subdomains, long TLDs) are never rejected.
+  candidateEmail: z
+    .preprocess(
+      (value) => (typeof value === "string" ? value.trim() : value),
+      z
+        .string()
+        .max(255)
+        .refine((value) => value === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value), {
+          message: "Please enter a valid email address.",
+        }),
+    )
+    .optional(),
   links: z.record(z.string(), z.string().trim().max(500)).default({}),
   linkedinSummary: z.string().trim().max(12000).optional(),
   resumeText: z.string().min(100).max(60000),
