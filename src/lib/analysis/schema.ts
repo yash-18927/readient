@@ -12,7 +12,37 @@ const stringList = z.preprocess((value) => {
 
 /** Accepts the common field-name variants models emit for project suggestions. */
 const projectSuggestion = z.preprocess((value) => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  if (typeof value === "string") {
+    return {
+      name: value,
+      description: value,
+      skills: [],
+      difficulty: "Intermediate",
+      estimated_time: "Not specified",
+    };
+  }
+  if (Array.isArray(value)) {
+    const text = value
+      .map((item) => (typeof item === "string" ? item : JSON.stringify(item)))
+      .filter(Boolean)
+      .join(" — ");
+    return {
+      name: text || "Suggested project",
+      description: text || "Build a role-relevant project that demonstrates practical skills.",
+      skills: [],
+      difficulty: "Intermediate",
+      estimated_time: "Not specified",
+    };
+  }
+  if (!value || typeof value !== "object") {
+    return {
+      name: "Suggested project",
+      description: "Build a role-relevant project that demonstrates practical skills.",
+      skills: [],
+      difficulty: "Intermediate",
+      estimated_time: "Not specified",
+    };
+  }
   const raw = value as Record<string, unknown>;
   const pick = (...keys: string[]) => {
     for (const key of keys) {
@@ -22,11 +52,15 @@ const projectSuggestion = z.preprocess((value) => {
     return "";
   };
   return {
-    name: pick("name", "title", "project", "project_name"),
-    description: pick("description", "summary", "details", "overview"),
+    name: pick("name", "title", "project", "project_name", "project_title") || "Suggested project",
+    description:
+      pick("description", "summary", "details", "overview", "what_to_build", "idea") ||
+      "Build a role-relevant project that demonstrates practical skills.",
     skills: raw["skills"] ?? raw["skills_practiced"] ?? raw["technologies"] ?? raw["tech_stack"] ?? [],
     difficulty: pick("difficulty", "level", "complexity") || "Intermediate",
-    estimated_time: pick("estimated_time", "time_estimate", "estimatedTime", "duration", "time"),
+    estimated_time:
+      pick("estimated_time", "time_estimate", "estimatedTime", "duration", "time", "timeline") ||
+      "Not specified",
   };
 }, z.object({
   name: z.string(),
