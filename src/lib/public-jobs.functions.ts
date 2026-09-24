@@ -102,9 +102,10 @@ export const submitApplication = createServerFn({ method: "POST" })
 
     const requirements = jobRequirementsSchema.parse(job.structured_requirements ?? {});
 
-    // The private rubric is not readable through the anonymous RLS client.
-    // Use the scorer's neutral default rather than requiring service-role access.
-    const rubric = jobRubricSchema.parse({ pillar_weights: {} });
+    // Fetch the recruiter's rubric via the security-definer RPC (server-side
+    // only; the rubric is never returned to the browser).
+    const { data: rubricRow } = await supabase.rpc("public_job_rubric", { _slug: data.slug });
+    const rubric = jobRubricSchema.parse(rubricRow ?? { pillar_weights: {} });
 
     const links = {
       ...data.links,
