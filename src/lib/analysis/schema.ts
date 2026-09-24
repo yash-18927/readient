@@ -105,7 +105,23 @@ export const analysisResultSchema = z.object({
   strengths: stringList,
   weaknesses: stringList,
   recommendations: z
-    .array(z.object({ skill: z.string(), reason: z.string(), resource: z.string() }))
+    .array(
+      z.object({
+        skill: z.string(),
+        reason: z.string(),
+        // Models sometimes return resource as an object, array, or null — flatten to text.
+        resource: z.preprocess((v) => {
+          if (v == null) return "";
+          if (typeof v === "string") return v;
+          if (Array.isArray(v))
+            return v
+              .map((x) => (typeof x === "string" ? x : Object.values(x ?? {}).filter(Boolean).join(" — ")))
+              .join("; ");
+          if (typeof v === "object") return Object.values(v).filter(Boolean).join(" — ");
+          return String(v);
+        }, z.string()),
+      }),
+    )
     .default([]),
   roadmap: z.object({
     weeks_1_2: z.object({ focus: z.string(), tasks: stringList }),
