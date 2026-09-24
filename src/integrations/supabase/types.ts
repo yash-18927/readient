@@ -258,6 +258,7 @@ export type Database = {
           total: number
         }[]
       }
+      public_job_rubric: { Args: { _slug: string }; Returns: Json }
       public_job_standings: {
         Args: { _slug: string }
         Returns: {
