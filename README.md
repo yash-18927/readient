@@ -1,92 +1,71 @@
 # Readient
 
-Build the foundation of a full-stack web app called "AI Placement Readiness Platform" using Lovable + Supabase. This is Stage 1 of a 4-stage build — only build what's described below. Do not add extra features, extra pages, or "nice to have" additions beyond this spec. Keep the codebase clean and minimal: use standard, well-established libraries and patterns, avoid custom-rolled solutions where a standard one exists, and avoid unnecessary abstraction layers.
+Readient helps students review resume readiness and helps recruiters screen applicants against job-specific scoring criteria. AI-generated scores assist screening; they are not hiring decisions or guarantees.
 
-## 1. Landing Page
+**Live app:** https://readient.lovable.app  
+**Repository:** https://github.com/yash-18927/readient
 
-A professional, modern SaaS-style landing page (like a senior product designer would build), with:
+## Features
 
-- Hero section: app name, one-line value proposition, short paragraph explaining what the app does (AI-powered resume/readiness analysis for students, and AI-powered job posting + candidate ranking for recruiters), and a single "Get Started" call-to-action button
+- Resume analysis, ATS feedback, skill gaps, and improvement suggestions.
+- Optional LinkedIn profile import from PDF, ZIP, or CSV.
+- GitHub and LeetCode evidence lookups, portfolio previews, and self-reported additional work.
+- Recruiter job creation, custom scoring criteria, and shareable application links.
+- Candidate reports, applicant rankings, and application standings.
+- Supabase authentication and database row-level security.
+- Light and dark themes.
 
-- Brief "How it works" section, presented differently for the two audiences (students / recruiters)
+## Technology
 
-- Clean footer
+| Area                   | Technology                                      |
+| ---------------------- | ----------------------------------------------- |
+| Application            | React 19, TypeScript, TanStack Start and Router |
+| Build                  | Vite, Bun                                       |
+| Styling                | Tailwind CSS, Radix UI, semantic theme tokens   |
+| Data                   | Supabase PostgreSQL and Auth, TanStack Query    |
+| Server runtime         | Cloudflare-compatible Worker target             |
+| Validation and imports | Zod, unpdf, fflate                              |
+| Integrations           | AI providers, GitHub REST, LeetCode GraphQL     |
 
-## 2. Role Selection Page
+Provider configuration lives in the server-side analysis modules and may change independently of academic documents.
 
-After "Get Started," show a selection screen: "I'm a Student" vs "I'm a Recruiter". This choice determines which dashboard and role gets assigned to their account on signup.
+## Local development
 
-## 3. Authentication (Real, Production-Grade)
-
-Implement real authentication using Supabase Auth with:
-
-- Google OAuth sign-in
-
-- Email/password sign-up and sign-in
-
-- Proper session persistence and refresh handling
-
-- A working, correctly configured OAuth callback route (this is critical — verify the callback route actually exists and works, this has been a recurring bug in a previous version of this app)
-
-- On first sign-up, store the user's chosen role (student or recruiter) in a Supabase `profiles` table linked to their auth user ID
-
-## 4. Role-Based Access Control (RBAC)
-
-- Authenticated students can only access the student dashboard
-
-- Authenticated recruiters can only access the recruiter dashboard
-
-- Unauthenticated users attempting to access either dashboard are redirected to sign-in
-
-- Set this up using Supabase Row Level Security (RLS) policies on all tables from the start, not just frontend route guards
-
-## 5. Dashboard Shells (empty for now — no analysis features yet)
-
-- Student dashboard: authenticated shell page with navigation, ready to receive analysis features in a later stage. Include a placeholder area where results will go.
-
-- Recruiter dashboard: authenticated shell page with navigation, ready to receive job-posting and candidate-ranking features in a later stage. Include a placeholder area where job listings will go.
-
-## 6. Supabase Schema (Stage 1 scope only)
-
-Set up these tables now, since later stages depend on them:
-
-- `profiles` (id, user_id FK to auth.users, role enum: 'student' | 'recruiter', full_name, created_at)
-
-- Enable RLS on all tables and write policies now, not later
-
-## Explicitly OUT OF SCOPE for this stage (do not build yet):
-
-- Resume upload or any AI analysis
-
-- Job posting creation or candidate ranking
-
-- PWA/offline support
-
-- Custom domain setup
-
-- Any payment/tier logic
-
-Keep the design system (colors, typography, spacing) consistent and reusable, since Stage 2 and 3 will build on top of this UI foundation.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://readient.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/7db6f922-d1b0-46fa-9aa3-be1c4a00f0b1).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Install [Bun](https://bun.sh/docs/installation) and a current Node.js LTS release.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+git clone https://github.com/yash-18927/readient.git
+cd readient
+bun install --frozen-lockfile
+bun run dev
 ```
+
+The tracked `.env` contains public browser configuration required by the connected project. Private credentials belong in Lovable project secrets or your hosting provider's environment settings, never in source control. Use an ignored `.env.local` for private local configuration. Do not paste access tokens into chat or commit them.
+
+AI analysis and external-service features require server credentials and a configured Supabase project. Installing dependencies does not provision those services. Database migrations are under `supabase/migrations/` and do not run automatically when GitHub receives a commit.
+
+## Repository layout
+
+```text
+src/
+  components/            Shared UI and feature views
+  integrations/supabase/ Authentication, clients, and database types
+  lib/                   Validation, analysis, imports, and server functions
+  routes/                TanStack file-based pages and endpoints
+  styles.css             Shared theme tokens
+supabase/migrations/     Versioned database changes
+.github/workflows/       Automated checks
+```
+
+Keep dependencies, generated build output, local caches, private environment files, and academic reports or presentations out of the app repository. Preserve platform configuration, migrations, and the text lockfile.
+
+## Checks and deployment
+
+GitHub Actions installs dependencies, checks TypeScript, runs lint, and builds the app on pushes and pull requests to `main`. This is **CI**, not automatic deployment: publishing remains separate unless a hosting deployment integration is configured.
+
+```sh
+bun run lint
+bun run build
+```
+
+Develop in the [Lovable editor](https://lovable.dev/projects/7db6f922-d1b0-46fa-9aa3-be1c4a00f0b1) or locally. Check **Project settings → Git** for the active sync connection and branch. Preserve published Git history; do not force-push or rewrite synced commits.

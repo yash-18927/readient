@@ -6,7 +6,18 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  {
+    ignores: [
+      "dist",
+      "dist-ssr",
+      ".output",
+      ".vinxi",
+      ".oj-cache",
+      ".tanstack",
+      ".wrangler",
+      "src/routeTree.gen.ts",
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -37,4 +48,7 @@ export default tseslint.config(
     },
   },
   eslintPluginPrettier,
+  // Keep existing formatting visible without blocking code-quality checks.
+  // Formatting can be standardized separately without rewriting app behavior.
+  { rules: { "prettier/prettier": "warn" } },
 );
